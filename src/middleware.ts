@@ -6,22 +6,17 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Public routes that don't require authentication
-  const publicRoutes = ['/login', '/register'];
+  const publicRoutes = ['/login', '/login/admin', '/login/user', '/register', '/forgot-password'];
   const isPublicRoute = publicRoutes.includes(pathname);
 
   // If user is not authenticated and trying to access protected route
   if (!token && !isPublicRoute && pathname !== '/') {
-    return NextResponse.redirect(new URL('/login', request.url));
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
   // If user is authenticated and trying to access auth routes
   if (token && isPublicRoute) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
-  }
-
-  // If accessing root, redirect to login
-  if (pathname === '/') {
-    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   // Note: We can't check user role here without making an API call

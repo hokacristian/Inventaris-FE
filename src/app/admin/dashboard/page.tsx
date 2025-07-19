@@ -1,13 +1,14 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/Button';
-import { LogOut, Package, Users, Building, Tag, Settings, BarChart3, TrendingUp, AlertTriangle, Clock } from 'lucide-react';
+import { Package, Users, TrendingUp, AlertTriangle, Settings, Tag, Building, BarChart3, Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function AdminDashboardPage() {
-  const { user, logout, isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -24,47 +25,12 @@ export default function AdminDashboardPage() {
     return <div>Access denied</div>;
   }
 
-  const handleLogout = () => {
-    logout();
-    window.location.href = '/login';
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900">
-                Admin Dashboard - Sistem Inventaris
-              </h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="text-sm text-gray-600">
-                <span className="font-medium">{user.nama}</span>
-                <span className="ml-2 px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">
-                  {user.role}
-                </span>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleLogout}
-                className="flex items-center gap-2"
-              >
-                <LogOut size={16} />
-                Keluar
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+    <DashboardLayout title="Admin Dashboard">
+      <div className="space-y-6">
+        {/* Welcome Section */}
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
             Selamat datang, Admin {user.nama}
           </h2>
           <p className="text-gray-600">
@@ -73,7 +39,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Admin Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="p-2 bg-blue-100 rounded-lg">
@@ -123,8 +89,8 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Admin Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white rounded-lg shadow">
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
@@ -204,7 +170,7 @@ export default function AdminDashboardPage() {
             </div>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

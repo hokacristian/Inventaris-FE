@@ -5,15 +5,17 @@ import { useRouter } from 'next/navigation';
 import { authApi } from '@/lib/api';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { Mail, Lock, User, Phone } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
     email: '',
-    nama: '',
-    nomorhp: '',
+    phone: '',
     password: '',
-    confirmPassword: '',
+    agreeTerms: false,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -27,8 +29,8 @@ export default function RegisterPage() {
     setError('');
     setSuccess('');
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Password dan konfirmasi password tidak cocok');
+    if (!formData.agreeTerms) {
+      setError('Anda harus menyetujui syarat dan ketentuan');
       setLoading(false);
       return;
     }
@@ -36,15 +38,15 @@ export default function RegisterPage() {
     try {
       const response = await authApi.register({
         email: formData.email,
-        nama: formData.nama,
-        nomorhp: formData.nomorhp,
+        nama: `${formData.firstName} ${formData.lastName}`,
+        nomorhp: formData.phone,
         password: formData.password,
       });
 
       if (response.success) {
         setSuccess('Registrasi berhasil! Silakan login dengan akun Anda.');
         setTimeout(() => {
-          router.push('/login');
+          router.push('/login/user');
         }, 2000);
       }
     } catch (error: unknown) {
@@ -58,120 +60,197 @@ export default function RegisterPage() {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: type === 'checkbox' ? checked : value,
     });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full space-y-8">
-        <div className="bg-white rounded-lg shadow-xl p-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-extrabold text-gray-900 mb-2">
-              Daftar Akun Baru
-            </h2>
-            <p className="text-gray-600 mb-8">
-              Buat akun untuk menggunakan sistem inventaris
-            </p>
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Left Side - Illustration */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-500 to-purple-600 items-center justify-center p-8">
+        <div className="text-center text-white">
+          <div className="w-64 h-64 bg-white bg-opacity-20 rounded-lg mb-8 flex items-center justify-center">
+            <div className="text-6xl">📦</div>
           </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <Input
-              id="nama"
-              name="nama"
-              type="text"
-              label="Nama Lengkap"
-              value={formData.nama}
-              onChange={handleInputChange}
-              icon={<User />}
-              required
-              placeholder="Masukkan nama lengkap Anda"
-            />
-
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              label="Email"
-              value={formData.email}
-              onChange={handleInputChange}
-              icon={<Mail />}
-              required
-              placeholder="Masukkan email Anda"
-            />
-
-            <Input
-              id="nomorhp"
-              name="nomorhp"
-              type="tel"
-              label="Nomor HP"
-              value={formData.nomorhp}
-              onChange={handleInputChange}
-              icon={<Phone />}
-              required
-              placeholder="Masukkan nomor HP Anda"
-            />
-
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              label="Password"
-              value={formData.password}
-              onChange={handleInputChange}
-              icon={<Lock />}
-              required
-              placeholder="Masukkan password Anda"
-            />
-
-            <Input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              label="Konfirmasi Password"
-              value={formData.confirmPassword}
-              onChange={handleInputChange}
-              icon={<Lock />}
-              required
-              placeholder="Konfirmasi password Anda"
-            />
-
-            {error && (
-              <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-md">
-                {error}
-              </div>
-            )}
-
-            {success && (
-              <div className="bg-green-50 border border-green-300 text-green-700 px-4 py-3 rounded-md">
-                {success}
-              </div>
-            )}
-
-            <Button
-              type="submit"
-              className="w-full"
-              loading={loading}
-              disabled={!formData.email || !formData.password || !formData.nama || !formData.nomorhp}
-            >
-              {loading ? 'Mendaftar...' : 'Daftar'}
-            </Button>
-          </form>
-
-          <div className="mt-6 text-center text-sm text-gray-600">
-            <p>
-              Sudah punya akun?{' '}
-              <a href="/login" className="text-blue-600 hover:text-blue-800 underline">
-                Masuk di sini
-              </a>
-            </p>
-          </div>
+          <h2 className="text-3xl font-bold mb-4">Bergabung dengan SEMANTIS BMN</h2>
+          <p className="text-lg opacity-90">
+            Kelola inventaris dengan mudah dan efisien
+          </p>
         </div>
+      </div>
 
-        <div className="text-center text-sm text-gray-500">
-          <p>© 2024 Sistem Inventaris. All rights reserved.</p>
+      {/* Right Side - Register Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
+        <div className="max-w-md w-full space-y-8">
+          <div className="bg-white rounded-lg shadow-xl p-8">
+            {/* Back Button */}
+            <div className="mb-6">
+              <Link 
+                href="/login/user" 
+                className="inline-flex items-center text-gray-600 hover:text-gray-800 text-sm"
+              >
+                <ArrowLeft size={16} className="mr-2" />
+                Kembali ke login
+              </Link>
+            </div>
+
+            {/* Logo */}
+            <div className="text-center mb-8">
+              <div className="flex justify-center mb-4">
+                <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-blue-900 rounded-lg flex items-center justify-center">
+                  <div className="text-white font-bold text-sm">BMN</div>
+                </div>
+              </div>
+              <h1 className="text-xl font-bold text-gray-900">SEMANTIS</h1>
+              <h2 className="text-lg font-bold text-yellow-500">BMN</h2>
+              <p className="text-xs text-gray-600 mt-1">TERKELOLA, TERDATA, TERJAGA</p>
+            </div>
+
+            {/* Register Title */}
+            <div className="text-center mb-8">
+              <h3 className="text-xl font-semibold text-gray-900">Register</h3>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* First Name & Last Name */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+                    First name
+                  </label>
+                  <Input
+                    id="firstName"
+                    name="firstName"
+                    type="text"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Enter your name"
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+                    Last name
+                  </label>
+                  <Input
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="minimum 8 characters"
+                    className="w-full"
+                  />
+                </div>
+              </div>
+
+              {/* Email & Phone */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                    Email
+                  </label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Enter your email"
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                    Phone no.
+                  </label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="minimum 8 characters"
+                    className="w-full"
+                  />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                  Password
+                </label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="Enter your email"
+                  className="w-full"
+                />
+              </div>
+
+              {/* Terms Checkbox */}
+              <div className="flex items-center">
+                <input
+                  id="agreeTerms"
+                  name="agreeTerms"
+                  type="checkbox"
+                  checked={formData.agreeTerms}
+                  onChange={handleInputChange}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+                <label htmlFor="agreeTerms" className="ml-2 block text-sm text-gray-900">
+                  I agree to all terms, privacy policies, and fees
+                </label>
+              </div>
+
+              {error && (
+                <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-md">
+                  {error}
+                </div>
+              )}
+
+              {success && (
+                <div className="bg-green-50 border border-green-300 text-green-700 px-4 py-3 rounded-md">
+                  {success}
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                className="w-full h-12 bg-blue-900 hover:bg-blue-800 text-white"
+                loading={loading}
+                disabled={!formData.email || !formData.password || !formData.firstName || !formData.lastName || !formData.phone || !formData.agreeTerms}
+              >
+                {loading ? 'Sign up...' : 'Sign up'}
+              </Button>
+            </form>
+
+            {/* Login Link */}
+            <div className="mt-8 text-center">
+              <p className="text-sm text-gray-600">
+                Already have an account?{' '}
+                <Link href="/login/user" className="text-blue-600 hover:text-blue-800 underline font-medium">
+                  Log in
+                </Link>
+              </p>
+            </div>
+          </div>
+
+          <div className="text-center text-sm text-gray-500">
+            <p>© 2024 SEMANTIS BMN. All rights reserved.</p>
+          </div>
         </div>
       </div>
     </div>
