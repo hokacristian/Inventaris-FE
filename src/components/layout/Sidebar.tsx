@@ -19,7 +19,10 @@ import {
   ChevronRight,
   X,
   HelpCircle,
-  LogOut
+  LogOut,
+  ClipboardList,
+  CheckCircle,
+  BookOpen
 } from 'lucide-react';
 
 interface SidebarItem {
@@ -66,6 +69,16 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         { label: 'Kategori', href: '/admin/kategori', icon: <Tag size={16} /> },
         { label: 'Merek', href: '/admin/merek', icon: <Building size={16} /> },
         { label: 'Lokasi', href: '/admin/lokasi', icon: <Building size={16} /> }
+      ]
+    },
+    {
+      label: 'Peminjaman',
+      icon: <ClipboardList size={20} />,
+      children: [
+        { label: 'Semua Permintaan', href: '/admin/peminjaman/requests', icon: <ClipboardList size={16} /> },
+        { label: 'Menunggu Persetujuan', href: '/admin/peminjaman/approve', icon: <CheckCircle size={16} /> },
+        { label: 'Sedang Dipinjam', href: '/admin/peminjaman/approved', icon: <BookOpen size={16} /> },
+        { label: 'Laporan', href: '/admin/peminjaman/reports', icon: <BarChart3 size={16} /> }
       ]
     },
     {

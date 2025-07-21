@@ -16,6 +16,13 @@ import type {
   CreateKategoriRequest,
   CreateMerekRequest,
   CreateLokasiRequest,
+  CreatePeminjamanRequest,
+  ApprovePeminjamanRequest,
+  RejectPeminjamanRequest,
+  ReturnPeminjamanRequest,
+  PeminjamanReport,
+  PeminjamanResponse,
+  PeminjamanDetailResponse,
 } from '@/types/api';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://inventaris-be.vercel.app';
@@ -224,6 +231,88 @@ export const barangApi = {
   delete: async (id: string): Promise<ApiResponse<void>> => {
     const response = await api.delete(`/barang/${id}`);
     return response.data;
+  },
+};
+
+export const peminjamanApi = {
+  // User endpoints
+  createRequest: async (data: CreatePeminjamanRequest): Promise<PeminjamanResponse> => {
+    const response = await api.post('/peminjaman/request', data);
+    return response.data;
+  },
+
+  getMyRequests: async (): Promise<PeminjamanResponse> => {
+    const response = await api.get('/peminjaman/my-requests');
+    return response.data;
+  },
+
+  getMyHistory: async (): Promise<PeminjamanResponse> => {
+    const response = await api.get('/peminjaman/my-history');
+    return response.data;
+  },
+
+  // Common endpoints
+  getById: async (id: string): Promise<PeminjamanDetailResponse> => {
+    const response = await api.get(`/peminjaman/${id}`);
+    return response.data;
+  },
+
+  // Admin endpoints
+  getAllRequests: async (): Promise<PeminjamanResponse> => {
+    const response = await api.get('/peminjaman/admin/all');
+    return response.data;
+  },
+
+  getReports: async (): Promise<ApiResponse<PeminjamanReport>> => {
+    const response = await api.get('/peminjaman/admin/reports');
+    return response.data;
+  },
+
+  approve: async (id: string, data: ApprovePeminjamanRequest): Promise<PeminjamanResponse> => {
+    if (data.fotoPinjam) {
+      const formData = new FormData();
+      formData.append('penanggungJawab', data.penanggungJawab);
+      formData.append('fotoPinjam', data.fotoPinjam);
+
+      const response = await api.post(`/peminjaman/admin/${id}/approve`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } else {
+      const response = await api.post(`/peminjaman/admin/${id}/approve`, {
+        penanggungJawab: data.penanggungJawab
+      });
+      return response.data;
+    }
+  },
+
+  reject: async (id: string, data: RejectPeminjamanRequest): Promise<PeminjamanResponse> => {
+    const response = await api.post(`/peminjaman/admin/${id}/reject`, data);
+    return response.data;
+  },
+
+  processReturn: async (id: string, data: ReturnPeminjamanRequest): Promise<PeminjamanResponse> => {
+    if (data.fotoKembali) {
+      const formData = new FormData();
+      formData.append('penanggungJawab', data.penanggungJawab);
+      formData.append('catatan', data.catatan);
+      formData.append('fotoKembali', data.fotoKembali);
+
+      const response = await api.post(`/peminjaman/admin/${id}/return`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } else {
+      const response = await api.post(`/peminjaman/admin/${id}/return`, {
+        penanggungJawab: data.penanggungJawab,
+        catatan: data.catatan,
+      });
+      return response.data;
+    }
   },
 };
 

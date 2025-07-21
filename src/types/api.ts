@@ -70,6 +70,9 @@ export interface Barang {
   deskripsi: string;
   kondisi: 'BAIK' | 'RUSAK_RINGAN' | 'RUSAK_BERAT';
   foto?: string;
+  fotoUrl?: string;
+  qrCodeUrl?: string;
+  status?: string;
   kategoriId: string;
   merekId: string;
   lokasiId: string;
@@ -125,4 +128,96 @@ export interface PaginatedResponse<T> {
     limit: number;
     totalPages: number;
   };
+}
+
+// Borrowing/Peminjaman interfaces
+export interface Peminjaman {
+  id: string;
+  userId: string;
+  barangId: string;
+  status: 'PENDING' | 'DIPINJAM' | 'REJECTED' | 'RETURNED';
+  tanggalPengajuan: string;
+  tanggalDisetujui: string | null;
+  tanggalDipinjam: string | null;
+  tanggalDikembalikan: string | null;
+  penanggungJawab: string | null;
+  fotoPinjam: string | null;
+  fotoKembali: string | null;
+  catatan: string;
+  approvedBy: string | null;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: string;
+    nama: string;
+    email: string;
+    nomorhp: string;
+  };
+  barang: {
+    id: string;
+    kodeBarang: string;
+    nama: string;
+    deskripsi: string;
+    kondisi: 'BAIK' | 'RUSAK_RINGAN' | 'RUSAK_BERAT';
+    status: string;
+    fotoUrl: string | null;
+    qrCodeUrl: string | null;
+    kategoriId: string;
+    merekId: string;
+    lokasiId: string;
+    createdAt: string;
+    updatedAt: string;
+    kategori: Kategori;
+    merek: Merek;
+    lokasi: Lokasi;
+  };
+  approvedByUser: {
+    id: string;
+    nama: string;
+    email: string;
+  } | null;
+}
+
+export interface CreatePeminjamanRequest {
+  barangId: string;
+  catatan: string;
+}
+
+export interface ApprovePeminjamanRequest {
+  penanggungJawab: string;
+  fotoPinjam?: File;
+}
+
+export interface RejectPeminjamanRequest {
+  catatan: string;
+}
+
+export interface ReturnPeminjamanRequest {
+  penanggungJawab: string;
+  catatan: string;
+  fotoKembali?: File;
+}
+
+export interface PeminjamanReport {
+  totalPeminjaman: number;
+  peminjamanPending: number;
+  peminjamanDipinjam: number;
+  peminjamanReturned: number;
+  peminjamanRejected: number;
+  topBorrowedItems: Array<{
+    barang: Barang;
+    count: number;
+  }>;
+}
+
+// API Response wrapper for peminjaman
+export interface PeminjamanResponse {
+  status: 'success' | 'error';
+  data: Peminjaman[];
+}
+
+// API Response wrapper for single peminjaman
+export interface PeminjamanDetailResponse {
+  status: 'success' | 'error';
+  data: Peminjaman;
 }
