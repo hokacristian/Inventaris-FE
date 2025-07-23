@@ -2,30 +2,24 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+import { LoginForm } from '@/components/forms';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import logoSemantis from './logo_semantis.png';
 
 export default function AdminLoginPage() {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const { login } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLoginSubmit = async (email: string, password: string) => {
     setLoading(true);
     setError('');
 
     try {
-      console.log('Attempting admin login with:', { email: formData.email });
-      const loginResult = await login(formData.email, formData.password);
+      console.log('Attempting admin login with:', { email });
+      const loginResult = await login(email, password);
       console.log('Login successful, result:', loginResult);
       
       // Pastikan hanya admin yang bisa login di halaman ini
@@ -58,20 +52,6 @@ export default function AdminLoginPage() {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const setDemoCredentials = () => {
-    setFormData({
-      email: 'admin@inventaris.com',
-      password: 'admin123',
-    });
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full space-y-8">
@@ -100,58 +80,14 @@ export default function AdminLoginPage() {
           </div>
 
           {/* Login Form */}
-          <div className="text-center mb-8">
-            <h3 className="text-xl font-semibold text-gray-900">Login Admin</h3>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email*
-              </label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-                placeholder="Enter your email"
-                className="w-full"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password*
-              </label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                required
-                placeholder="minimum 8 characters"
-                className="w-full"
-              />
-            </div>
-
-            {error && (
-              <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-md">
-                {error}
-              </div>
-            )}
-
-            <Button
-              type="submit"
-              className="w-full h-12 bg-blue-900 hover:bg-blue-800 text-white"
-              loading={loading}
-              disabled={!formData.email || !formData.password}
-            >
-              {loading ? 'Login...' : 'Login'}
-            </Button>
-          </form>
+          <LoginForm
+            onSubmit={handleLoginSubmit}
+            loading={loading}
+            error={error}
+            title="Login Admin"
+            emailPlaceholder="Enter your email"
+            passwordPlaceholder="minimum 8 characters"
+          />
         </div>
 
         <div className="text-center text-sm text-gray-500">
