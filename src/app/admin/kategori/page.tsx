@@ -14,6 +14,7 @@ import {
   Search,
   AlertCircle
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface KategoriModalProps {
   isOpen: boolean;
@@ -37,7 +38,7 @@ function KategoriModal({ isOpen, onClose, onSubmit, kategori, loading }: Kategor
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nama.trim()) {
-      alert('Nama kategori harus diisi');
+      toast.error('Nama kategori harus diisi');
       return;
     }
     await onSubmit(nama.trim());
@@ -47,8 +48,15 @@ function KategoriModal({ isOpen, onClose, onSubmit, kategori, loading }: Kategor
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full p-6">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl border-0">
         <h3 className="text-lg font-semibold mb-4">
           {kategori ? 'Edit Kategori' : 'Tambah Kategori'}
         </h3>
@@ -107,7 +115,7 @@ export default function AdminKategoriPage() {
       }
     } catch (error) {
       console.error('Failed to load kategori:', error);
-      alert('Gagal memuat data kategori');
+      toast.error('Gagal memuat data kategori');
     } finally {
       setLoading(false);
     }
@@ -118,13 +126,13 @@ export default function AdminKategoriPage() {
     try {
       const response = await kategoriApi.create({ nama });
       if (response.success) {
-        alert('Kategori berhasil ditambahkan');
+        toast.success('Kategori berhasil ditambahkan! 🎉');
         setIsModalOpen(false);
         loadKategori();
       }
     } catch (error) {
       console.error('Failed to create kategori:', error);
-      alert('Gagal menambahkan kategori');
+      toast.error('Gagal menambahkan kategori');
     } finally {
       setActionLoading(false);
     }
@@ -137,14 +145,14 @@ export default function AdminKategoriPage() {
     try {
       const response = await kategoriApi.update(selectedKategori.id, { nama });
       if (response.success) {
-        alert('Kategori berhasil diupdate');
+        toast.success('Kategori berhasil diupdate! ✅');
         setIsModalOpen(false);
         setSelectedKategori(null);
         loadKategori();
       }
     } catch (error) {
       console.error('Failed to update kategori:', error);
-      alert('Gagal mengupdate kategori');
+      toast.error('Gagal mengupdate kategori');
     } finally {
       setActionLoading(false);
     }
@@ -156,12 +164,12 @@ export default function AdminKategoriPage() {
     try {
       const response = await kategoriApi.delete(id);
       if (response.success) {
-        alert('Kategori berhasil dihapus');
+        toast.success('Kategori berhasil dihapus! 🗑️');
         loadKategori();
       }
     } catch (error) {
       console.error('Failed to delete kategori:', error);
-      alert('Gagal menghapus kategori. Mungkin kategori masih digunakan oleh barang.');
+      toast.error('Gagal menghapus kategori. Mungkin kategori masih digunakan oleh barang.');
     }
   };
 

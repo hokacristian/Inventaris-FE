@@ -18,6 +18,7 @@ import {
   RotateCcw,
   Filter
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 
 export default function AdminApprovedRequestsPage() {
@@ -68,13 +69,13 @@ export default function AdminApprovedRequestsPage() {
       });
 
       if (response.status === 'success') {
-        alert('Pengembalian berhasil diproses');
+        toast.success('Pengembalian berhasil diproses! 📦');
         handleCloseReturnModal();
         loadApprovedRequests();
       }
     } catch (error) {
       console.error('Failed to process return:', error);
-      alert('Gagal memproses pengembalian');
+      toast.error('Gagal memproses pengembalian');
     } finally {
       setReturnLoading(false);
     }

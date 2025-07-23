@@ -20,6 +20,7 @@ import {
   Eye,
   Upload
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface ApprovalModalProps {
   request: Peminjaman | null;
@@ -45,13 +46,13 @@ function ApprovalModal({ request, isOpen, onClose, onApprove, onReject }: Approv
     try {
       if (mode === 'approve') {
         if (!penanggungJawab.trim()) {
-          alert('Nama penanggung jawab harus diisi');
+          toast.error('Nama penanggung jawab harus diisi');
           return;
         }
         await onApprove(request.id, penanggungJawab, foto || undefined);
       } else {
         if (!catatan.trim()) {
-          alert('Alasan penolakan harus diisi');
+          toast.error('Alasan penolakan harus diisi');
           return;
         }
         await onReject(request.id, catatan);
@@ -97,8 +98,15 @@ function ApprovalModal({ request, isOpen, onClose, onApprove, onReject }: Approv
   if (!isOpen || !request) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center p-4 z-50 pointer-events-none">
-      <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-2xl border border-gray-200 pointer-events-auto">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-2xl border-0">
         <h3 className="text-lg font-semibold mb-4">
           {mode === 'approve' ? 'Setujui Permintaan' : 'Tolak Permintaan'}
         </h3>
@@ -307,7 +315,7 @@ export default function AdminApproveRequestsPage() {
   const handleApprove = async (id: string, penanggungJawab: string, foto?: File) => {
     const response = await peminjamanApi.approve(id, { penanggungJawab, fotoPinjam: foto });
     if (response.status === 'success') {
-      alert('Permintaan berhasil disetujui');
+      toast.success('Permintaan berhasil disetujui! ✅');
       loadPendingRequests();
     }
   };
@@ -315,7 +323,7 @@ export default function AdminApproveRequestsPage() {
   const handleReject = async (id: string, catatan: string) => {
     const response = await peminjamanApi.reject(id, { catatan });
     if (response.status === 'success') {
-      alert('Permintaan berhasil ditolak');
+      toast.success('Permintaan berhasil ditolak! ❌');
       loadPendingRequests();
     }
   };

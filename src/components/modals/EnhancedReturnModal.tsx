@@ -14,6 +14,7 @@ import {
   Upload
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import toast from 'react-hot-toast';
 import QRScanner from '@/components/scanner/QRScanner';
 import CameraCapture from '@/components/camera/CameraCapture';
 import { barangApi } from '@/lib/api';
@@ -145,11 +146,11 @@ export default function EnhancedReturnModal({
     e.preventDefault();
     
     if (!penanggungJawab.trim()) {
-      alert('Nama penanggung jawab harus diisi');
+      toast.error('Nama penanggung jawab harus diisi');
       return;
     }
     if (!catatan.trim()) {
-      alert('Catatan pengembalian harus diisi');
+      toast.error('Catatan pengembalian harus diisi');
       return;
     }
 
@@ -168,8 +169,15 @@ export default function EnhancedReturnModal({
 
   return (
     <>
-      <div className="fixed inset-0 flex items-center justify-center p-4 z-50 pointer-events-none">
-        <div className="bg-white rounded-lg max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200 pointer-events-auto">
+      <div 
+        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            onClose();
+          }
+        }}
+      >
+        <div className="bg-white rounded-lg max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto shadow-2xl border-0">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold">Proses Pengembalian</h3>
             <button

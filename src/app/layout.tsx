@@ -27,22 +27,41 @@ export default function RootLayout({
           {children}
           <Toaster 
             position="top-right"
+            containerStyle={{
+              top: 20,
+              right: 20,
+              zIndex: 9999,
+            }}
             toastOptions={{
-              duration: 3000,
+              duration: 4000,
               style: {
                 background: '#363636',
                 color: '#fff',
+                borderRadius: '8px',
+                padding: '16px',
+                fontSize: '14px',
+                maxWidth: '350px',
+                boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+                zIndex: 9999,
               },
               success: {
+                style: {
+                  background: '#10b981',
+                  color: '#fff',
+                },
                 iconTheme: {
-                  primary: '#4aed88',
-                  secondary: '#fff',
+                  primary: '#fff',
+                  secondary: '#10b981',
                 },
               },
               error: {
+                style: {
+                  background: '#ef4444',
+                  color: '#fff',
+                },
                 iconTheme: {
-                  primary: '#ff4b4b',
-                  secondary: '#fff',
+                  primary: '#fff',
+                  secondary: '#ef4444',
                 },
               },
             }}

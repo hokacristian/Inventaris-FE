@@ -68,8 +68,15 @@ export function TambahLokasiModal({ isOpen, onClose, onSuccess }: TambahLokasiMo
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center p-4 z-50 pointer-events-none">
-      <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-2xl border border-gray-200 pointer-events-auto">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-2xl border-0">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">Tambah Lokasi</h3>
           <button
