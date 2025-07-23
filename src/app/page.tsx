@@ -2,6 +2,9 @@
 
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
+import logoSemantis from './logo_semantis.png';
+
+
 
 export default function Home() {
   const router = useRouter();
@@ -14,15 +17,39 @@ export default function Home() {
           <div className="mb-8">
             <div className="flex justify-center mb-4">
               <div className="relative">
-                {/* Logo Placeholder - sesuaikan dengan logo SEMANTIS BMN */}
-                <div className="w-24 h-24 bg-gradient-to-br from-yellow-400 to-blue-900 rounded-lg flex items-center justify-center">
-                  <div className="text-white font-bold text-lg">BMN</div>
+                <img
+                  src={typeof logoSemantis === 'string' ? logoSemantis : logoSemantis.src}
+                  alt="Semantis BMN Logo"
+                  style={{ width: '120px', height: 'auto', maxHeight: '64px' }}
+                  className="mx-auto"
+                  onLoad={() => console.log('Logo berhasil dimuat')}
+                  onError={(e) => {
+                    console.error('Logo gagal dimuat');
+                    // Hide broken image and show fallback
+                    e.currentTarget.style.display = 'none';
+                    const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                    if (fallback) fallback.style.display = 'block';
+                  }}
+                />
+                <div 
+                  style={{ 
+                    display: 'none',
+                    width: '120px', 
+                    height: '64px',
+                    background: '#1e40af',
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    borderRadius: '8px',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                  className="flex"
+                >
+                  SEMANTIS BMN
                 </div>
               </div>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">SEMANTIS</h1>
-            <h2 className="text-xl font-bold text-yellow-500">BMN</h2>
-            <p className="text-sm text-gray-600 mt-1">TERKELOLA, TERDATA, TERJAGA</p>
           </div>
 
           {/* Pilih Akun Section */}

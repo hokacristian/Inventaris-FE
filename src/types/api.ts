@@ -70,8 +70,8 @@ export interface Barang {
   deskripsi: string;
   kondisi: 'BAIK' | 'RUSAK_RINGAN' | 'RUSAK_BERAT';
   foto?: string;
-  fotoUrl?: string;
-  qrCodeUrl?: string;
+  fotoUrl?: string | null;
+  qrCodeUrl?: string | null;
   status?: string;
   kategoriId: string;
   merekId: string;
@@ -220,4 +220,18 @@ export interface PeminjamanResponse {
 export interface PeminjamanDetailResponse {
   status: 'success' | 'error';
   data: Peminjaman;
+}
+
+// Statistics interface
+export interface Statistics {
+  totalBarang: number;
+  totalUserRoleUsers: number;
+  barangRusak: number;
+  barangBaik: number;
+}
+
+export interface StatisticsResponse {
+  success: boolean;
+  message: string;
+  data: Statistics;
 }

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/Button';
+import EnhancedReturnModal from '@/components/modals/EnhancedReturnModal';
 import { peminjamanApi } from '@/lib/api';
 import type { Peminjaman } from '@/types/api';
 import { 
@@ -15,145 +16,9 @@ import {
   Clock,
   AlertCircle,
   RotateCcw,
-  Camera,
   Filter
 } from 'lucide-react';
 
-interface ReturnModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (penanggungJawab: string, catatan: string, foto?: File) => Promise<void>;
-  peminjaman?: Peminjaman | null;
-  loading?: boolean;
-}
-
-function ReturnModal({ isOpen, onClose, onSubmit, peminjaman, loading }: ReturnModalProps) {
-  const [penanggungJawab, setPenanggungJawab] = useState('');
-  const [catatan, setCatatan] = useState('');
-  const [foto, setFoto] = useState<File | null>(null);
-
-  useEffect(() => {
-    if (!isOpen) {
-      setPenanggungJawab('');
-      setCatatan('');
-      setFoto(null);
-    }
-  }, [isOpen]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!penanggungJawab.trim()) {
-      alert('Nama penanggung jawab harus diisi');
-      return;
-    }
-    if (!catatan.trim()) {
-      alert('Catatan pengembalian harus diisi');
-      return;
-    }
-
-    await onSubmit(penanggungJawab.trim(), catatan.trim(), foto || undefined);
-  };
-
-  if (!isOpen || !peminjaman) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full p-6">
-        <h3 className="text-lg font-semibold mb-4">Proses Pengembalian</h3>
-        
-        {/* Request Info */}
-        <div className="bg-gray-50 p-4 rounded-lg mb-4">
-          <div className="flex items-center space-x-3 mb-2">
-            <User className="w-4 h-4 text-gray-500" />
-            <span className="text-sm font-medium">{peminjaman.user.nama}</span>
-          </div>
-          <div className="flex items-center space-x-3 mb-2">
-            <Package className="w-4 h-4 text-gray-500" />
-            <span className="text-sm">{peminjaman.barang.nama}</span>
-          </div>
-          <div className="flex items-center space-x-3">
-            <Calendar className="w-4 h-4 text-gray-500" />
-            <span className="text-sm text-gray-600">
-              Dipinjam: {peminjaman.tanggalDipinjam ? new Date(peminjaman.tanggalDipinjam).toLocaleDateString('id-ID') : '-'}
-            </span>
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Nama Penanggung Jawab *
-            </label>
-            <input
-              type="text"
-              value={penanggungJawab}
-              onChange={(e) => setPenanggungJawab(e.target.value)}
-              placeholder="Nama lengkap penanggung jawab"
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
-              required
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Catatan Pengembalian *
-            </label>
-            <textarea
-              value={catatan}
-              onChange={(e) => setCatatan(e.target.value)}
-              placeholder="Kondisi barang saat dikembalikan, catatan khusus, dll..."
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
-              rows={3}
-              required
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Foto Dokumentasi (Opsional)
-            </label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setFoto(e.target.files?.[0] || null)}
-                className="hidden"
-                id="foto-return-upload"
-              />
-              <label htmlFor="foto-return-upload" className="cursor-pointer flex flex-col items-center">
-                <Camera className="w-8 h-8 text-gray-400 mb-2" />
-                <span className="text-sm text-gray-600">
-                  {foto ? foto.name : 'Klik untuk upload foto'}
-                </span>
-              </label>
-            </div>
-          </div>
-          
-          <div className="flex space-x-3 mt-6">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              className="flex-1"
-              disabled={loading}
-            >
-              Batal
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={loading}
-              className="flex-1"
-            >
-              {loading ? 'Memproses...' : 'Proses Pengembalian'}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
 
 export default function AdminApprovedRequestsPage() {
   const router = useRouter();
@@ -390,8 +255,8 @@ export default function AdminApprovedRequestsPage() {
         </div>
       </div>
 
-      {/* Return Modal */}
-      <ReturnModal
+      {/* Enhanced Return Modal */}
+      <EnhancedReturnModal
         isOpen={isReturnModalOpen}
         onClose={handleCloseReturnModal}
         onSubmit={handleProcessReturn}

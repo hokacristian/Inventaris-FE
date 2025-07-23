@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import logoSemantis from './logo_semantis.png';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -73,7 +74,12 @@ export default function RegisterPage() {
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-500 to-purple-600 items-center justify-center p-8">
         <div className="text-center text-white">
           <div className="w-64 h-64 bg-white bg-opacity-20 rounded-lg mb-8 flex items-center justify-center">
-            <div className="text-6xl">📦</div>
+            <img
+              src={typeof logoSemantis === 'string' ? logoSemantis : logoSemantis.src}
+              alt="SEMANTIS BMN Logo"
+              style={{ width: '200px', height: 'auto', maxHeight: '200px' }}
+              className="object-contain"
+            />
           </div>
           <h2 className="text-3xl font-bold mb-4">Bergabung dengan SEMANTIS BMN</h2>
           <p className="text-lg opacity-90">
@@ -100,13 +106,13 @@ export default function RegisterPage() {
             {/* Logo */}
             <div className="text-center mb-8">
               <div className="flex justify-center mb-4">
-                <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-blue-900 rounded-lg flex items-center justify-center">
-                  <div className="text-white font-bold text-sm">BMN</div>
-                </div>
+                <img
+                  src={typeof logoSemantis === 'string' ? logoSemantis : logoSemantis.src}
+                  alt="SEMANTIS BMN Logo"
+                  style={{ width: '160px', height: 'auto', maxHeight: '120px' }}
+                  className="object-contain"
+                />
               </div>
-              <h1 className="text-xl font-bold text-gray-900">SEMANTIS</h1>
-              <h2 className="text-lg font-bold text-yellow-500">BMN</h2>
-              <p className="text-xs text-gray-600 mt-1">TERKELOLA, TERDATA, TERJAGA</p>
             </div>
 
             {/* Register Title */}

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { ArrowLeft, Mail, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+import logoSemantis from './logo_semantis.png';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -36,13 +37,13 @@ export default function ForgotPasswordPage() {
             {/* Logo */}
             <div className="mb-8">
               <div className="flex justify-center mb-4">
-                <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-blue-900 rounded-lg flex items-center justify-center">
-                  <div className="text-white font-bold text-sm">BMN</div>
-                </div>
+                <img
+                  src={typeof logoSemantis === 'string' ? logoSemantis : logoSemantis.src}
+                  alt="SEMANTIS BMN Logo"
+                  style={{ width: '160px', height: 'auto', maxHeight: '120px' }}
+                  className="object-contain"
+                />
               </div>
-              <h1 className="text-xl font-bold text-gray-900">SEMANTIS</h1>
-              <h2 className="text-lg font-bold text-yellow-500">BMN</h2>
-              <p className="text-xs text-gray-600 mt-1">TERKELOLA, TERDATA, TERJAGA</p>
             </div>
 
             {/* Success Message */}
@@ -107,13 +108,13 @@ export default function ForgotPasswordPage() {
           {/* Logo */}
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
-              <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-blue-900 rounded-lg flex items-center justify-center">
-                <div className="text-white font-bold text-sm">BMN</div>
-              </div>
+              <img
+                src={typeof logoSemantis === 'string' ? logoSemantis : logoSemantis.src}
+                alt="SEMANTIS BMN Logo"
+                style={{ width: '160px', height: 'auto', maxHeight: '120px' }}
+                className="object-contain"
+              />
             </div>
-            <h1 className="text-xl font-bold text-gray-900">SEMANTIS</h1>
-            <h2 className="text-lg font-bold text-yellow-500">BMN</h2>
-            <p className="text-xs text-gray-600 mt-1">TERKELOLA, TERDATA, TERJAGA</p>
           </div>
 
           {/* Forgot Password Form */}

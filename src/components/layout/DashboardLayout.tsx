@@ -66,8 +66,8 @@ export function DashboardLayout({ children, title }: DashboardLayoutProps) {
                     <p className="text-xs text-gray-500">{user?.role}</p>
                   </div>
                   
-                  <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-blue-900 rounded-full flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">
+                  <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                    <span className="text-gray-700 font-bold text-sm">
                       {user?.nama?.charAt(0) || 'U'}
                     </span>
                   </div>

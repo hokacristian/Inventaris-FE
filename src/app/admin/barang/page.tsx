@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+import { TambahBarangModal } from '@/components/modals';
 import { barangApi, kategoriApi, merekApi, lokasiApi } from '@/lib/api';
 import type { Barang, Kategori, Merek, Lokasi } from '@/types/api';
 import { 
@@ -14,251 +14,13 @@ import {
   Package,
   Search,
   AlertCircle,
-  Camera,
   Tag,
   Building,
   MapPin,
   Eye
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
-interface BarangModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (data: BarangFormData) => Promise<void>;
-  barang?: Barang | null;
-  loading?: boolean;
-  kategoriList: Kategori[];
-  merekList: Merek[];
-  lokasiList: Lokasi[];
-}
-
-interface BarangFormData {
-  nama: string;
-  deskripsi: string;
-  kategoriId: string;
-  merekId: string;
-  lokasiId: string;
-  kondisi: 'BAIK' | 'RUSAK_RINGAN' | 'RUSAK_BERAT';
-  foto?: File;
-}
-
-function BarangModal({ 
-  isOpen, 
-  onClose, 
-  onSubmit, 
-  barang, 
-  loading, 
-  kategoriList, 
-  merekList, 
-  lokasiList 
-}: BarangModalProps) {
-  const [formData, setFormData] = useState<BarangFormData>({
-    nama: '',
-    deskripsi: '',
-    kategoriId: '',
-    merekId: '',
-    lokasiId: '',
-    kondisi: 'BAIK'
-  });
-
-  useEffect(() => {
-    if (barang) {
-      setFormData({
-        nama: barang.nama,
-        deskripsi: barang.deskripsi,
-        kategoriId: barang.kategoriId,
-        merekId: barang.merekId,
-        lokasiId: barang.lokasiId,
-        kondisi: barang.kondisi
-      });
-    } else {
-      setFormData({
-        nama: '',
-        deskripsi: '',
-        kategoriId: '',
-        merekId: '',
-        lokasiId: '',
-        kondisi: 'BAIK'
-      });
-    }
-  }, [barang]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.nama.trim()) {
-      alert('Nama barang harus diisi');
-      return;
-    }
-    if (!formData.kategoriId) {
-      alert('Kategori harus dipilih');
-      return;
-    }
-    if (!formData.merekId) {
-      alert('Merek harus dipilih');
-      return;
-    }
-    if (!formData.lokasiId) {
-      alert('Lokasi harus dipilih');
-      return;
-    }
-
-    await onSubmit(formData);
-  };
-
-  const handleInputChange = (field: keyof BarangFormData, value: string | File) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto">
-        <h3 className="text-lg font-semibold mb-4">
-          {barang ? 'Edit Barang' : 'Tambah Barang'}
-        </h3>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            label="Nama Barang"
-            value={formData.nama}
-            onChange={(e) => handleInputChange('nama', e.target.value)}
-            placeholder="Masukkan nama barang"
-            required
-          />
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Deskripsi
-            </label>
-            <textarea
-              value={formData.deskripsi}
-              onChange={(e) => handleInputChange('deskripsi', e.target.value)}
-              placeholder="Masukkan deskripsi barang"
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
-              rows={3}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Kategori *
-            </label>
-            <select
-              value={formData.kategoriId}
-              onChange={(e) => handleInputChange('kategoriId', e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
-              required
-            >
-              <option value="">Pilih Kategori</option>
-              {kategoriList.map((kategori) => (
-                <option key={kategori.id} value={kategori.id}>
-                  {kategori.nama}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Merek *
-            </label>
-            <select
-              value={formData.merekId}
-              onChange={(e) => handleInputChange('merekId', e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
-              required
-            >
-              <option value="">Pilih Merek</option>
-              {merekList.map((merek) => (
-                <option key={merek.id} value={merek.id}>
-                  {merek.nama}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Lokasi *
-            </label>
-            <select
-              value={formData.lokasiId}
-              onChange={(e) => handleInputChange('lokasiId', e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
-              required
-            >
-              <option value="">Pilih Lokasi</option>
-              {lokasiList.map((lokasi) => (
-                <option key={lokasi.id} value={lokasi.id}>
-                  {lokasi.nama}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Kondisi *
-            </label>
-            <select
-              value={formData.kondisi}
-              onChange={(e) => handleInputChange('kondisi', e.target.value as 'BAIK' | 'RUSAK_RINGAN' | 'RUSAK_BERAT')}
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
-              required
-            >
-              <option value="BAIK">Baik</option>
-              <option value="RUSAK_RINGAN">Rusak Ringan</option>
-              <option value="RUSAK_BERAT">Rusak Berat</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Foto (Opsional)
-            </label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleInputChange('foto', e.target.files?.[0] as File)}
-                className="hidden"
-                id="foto-upload"
-              />
-              <label htmlFor="foto-upload" className="cursor-pointer flex flex-col items-center">
-                <Camera className="w-8 h-8 text-gray-400 mb-2" />
-                <span className="text-sm text-gray-600">
-                  {formData.foto ? formData.foto.name : 'Klik untuk upload foto'}
-                </span>
-              </label>
-            </div>
-          </div>
-          
-          <div className="flex space-x-3 mt-6">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              className="flex-1"
-              disabled={loading}
-            >
-              Batal
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={loading}
-              className="flex-1"
-            >
-              {loading ? 'Menyimpan...' : barang ? 'Update' : 'Simpan'}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
 
 const kondisiColors = {
   BAIK: 'bg-green-100 text-green-800',
@@ -279,10 +41,9 @@ export default function AdminBarangPage() {
   const [merekList, setMerekList] = useState<Merek[]>([]);
   const [lokasiList, setLokasiList] = useState<Lokasi[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTambahModalOpen, setIsTambahModalOpen] = useState(false);
   const [selectedBarang, setSelectedBarang] = useState<Barang | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
     loadAllData();
@@ -303,48 +64,17 @@ export default function AdminBarangPage() {
       if (lokasiRes.success) setLokasiList(lokasiRes.data);
     } catch (error) {
       console.error('Failed to load data:', error);
-      alert('Gagal memuat data');
+      toast.error('Gagal memuat data');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCreateBarang = async (data: BarangFormData) => {
-    setActionLoading(true);
-    try {
-      const response = await barangApi.create(data);
-      if (response.success) {
-        alert('Barang berhasil ditambahkan');
-        setIsModalOpen(false);
-        loadAllData();
-      }
-    } catch (error) {
-      console.error('Failed to create barang:', error);
-      alert('Gagal menambahkan barang');
-    } finally {
-      setActionLoading(false);
-    }
+  const handleTambahBarangSuccess = () => {
+    loadAllData();
   };
 
-  const handleUpdateBarang = async (data: BarangFormData) => {
-    if (!selectedBarang) return;
-    
-    setActionLoading(true);
-    try {
-      const response = await barangApi.update(selectedBarang.id, data);
-      if (response.success) {
-        alert('Barang berhasil diupdate');
-        setIsModalOpen(false);
-        setSelectedBarang(null);
-        loadAllData();
-      }
-    } catch (error) {
-      console.error('Failed to update barang:', error);
-      alert('Gagal mengupdate barang');
-    } finally {
-      setActionLoading(false);
-    }
-  };
+  // Function removed - not currently used in the UI
 
   const handleDeleteBarang = async (id: string) => {
     if (!confirm('Apakah Anda yakin ingin menghapus barang ini?')) return;
@@ -352,28 +82,22 @@ export default function AdminBarangPage() {
     try {
       const response = await barangApi.delete(id);
       if (response.success) {
-        alert('Barang berhasil dihapus');
+        toast.success('Barang berhasil dihapus');
         loadAllData();
       }
     } catch (error) {
       console.error('Failed to delete barang:', error);
-      alert('Gagal menghapus barang. Mungkin barang masih sedang dipinjam.');
+      toast.error('Gagal menghapus barang. Mungkin barang masih sedang dipinjam.');
     }
   };
 
   const openCreateModal = () => {
-    setSelectedBarang(null);
-    setIsModalOpen(true);
+    setIsTambahModalOpen(true);
   };
 
   const openEditModal = (barang: Barang) => {
     setSelectedBarang(barang);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedBarang(null);
+    // TODO: Implement edit modal
   };
 
   const filteredBarang = barangList.filter(barang =>
@@ -574,12 +298,10 @@ export default function AdminBarangPage() {
       </div>
 
       {/* Modal */}
-      <BarangModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        onSubmit={selectedBarang ? handleUpdateBarang : handleCreateBarang}
-        barang={selectedBarang}
-        loading={actionLoading}
+      <TambahBarangModal
+        isOpen={isTambahModalOpen}
+        onClose={() => setIsTambahModalOpen(false)}
+        onSuccess={handleTambahBarangSuccess}
         kategoriList={kategoriList}
         merekList={merekList}
         lokasiList={lokasiList}

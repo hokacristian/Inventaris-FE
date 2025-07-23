@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+import { TambahMerekModal } from '@/components/modals';
 import { merekApi } from '@/lib/api';
 import type { Merek } from '@/types/api';
 import { 
@@ -14,86 +14,15 @@ import {
   Search,
   AlertCircle
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
-interface MerekModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (nama: string) => Promise<void>;
-  merek?: Merek | null;
-  loading?: boolean;
-}
-
-function MerekModal({ isOpen, onClose, onSubmit, merek, loading }: MerekModalProps) {
-  const [nama, setNama] = useState('');
-
-  useEffect(() => {
-    if (merek) {
-      setNama(merek.nama);
-    } else {
-      setNama('');
-    }
-  }, [merek]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!nama.trim()) {
-      alert('Nama merek harus diisi');
-      return;
-    }
-    await onSubmit(nama.trim());
-    setNama('');
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full p-6">
-        <h3 className="text-lg font-semibold mb-4">
-          {merek ? 'Edit Merek' : 'Tambah Merek'}
-        </h3>
-        
-        <form onSubmit={handleSubmit}>
-          <Input
-            label="Nama Merek"
-            value={nama}
-            onChange={(e) => setNama(e.target.value)}
-            placeholder="Masukkan nama merek"
-            required
-          />
-          
-          <div className="flex space-x-3 mt-6">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              className="flex-1"
-              disabled={loading}
-            >
-              Batal
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={loading}
-              className="flex-1"
-            >
-              {loading ? 'Menyimpan...' : merek ? 'Update' : 'Simpan'}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
 
 export default function AdminMerekPage() {
   const [merekList, setMerekList] = useState<Merek[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTambahModalOpen, setIsTambahModalOpen] = useState(false);
   const [selectedMerek, setSelectedMerek] = useState<Merek | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
     loadMerek();
@@ -107,48 +36,17 @@ export default function AdminMerekPage() {
       }
     } catch (error) {
       console.error('Failed to load merek:', error);
-      alert('Gagal memuat data merek');
+      toast.error('Gagal memuat data merek');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCreateMerek = async (nama: string) => {
-    setActionLoading(true);
-    try {
-      const response = await merekApi.create({ nama });
-      if (response.success) {
-        alert('Merek berhasil ditambahkan');
-        setIsModalOpen(false);
-        loadMerek();
-      }
-    } catch (error) {
-      console.error('Failed to create merek:', error);
-      alert('Gagal menambahkan merek');
-    } finally {
-      setActionLoading(false);
-    }
+  const handleTambahMerekSuccess = () => {
+    loadMerek();
   };
 
-  const handleUpdateMerek = async (nama: string) => {
-    if (!selectedMerek) return;
-    
-    setActionLoading(true);
-    try {
-      const response = await merekApi.update(selectedMerek.id, { nama });
-      if (response.success) {
-        alert('Merek berhasil diupdate');
-        setIsModalOpen(false);
-        setSelectedMerek(null);
-        loadMerek();
-      }
-    } catch (error) {
-      console.error('Failed to update merek:', error);
-      alert('Gagal mengupdate merek');
-    } finally {
-      setActionLoading(false);
-    }
-  };
+  // Function removed - not currently used in the UI
 
   const handleDeleteMerek = async (id: string) => {
     if (!confirm('Apakah Anda yakin ingin menghapus merek ini?')) return;
@@ -156,28 +54,22 @@ export default function AdminMerekPage() {
     try {
       const response = await merekApi.delete(id);
       if (response.success) {
-        alert('Merek berhasil dihapus');
+        toast.success('Merek berhasil dihapus');
         loadMerek();
       }
     } catch (error) {
       console.error('Failed to delete merek:', error);
-      alert('Gagal menghapus merek. Mungkin merek masih digunakan oleh barang.');
+      toast.error('Gagal menghapus merek. Mungkin merek masih digunakan oleh barang.');
     }
   };
 
   const openCreateModal = () => {
-    setSelectedMerek(null);
-    setIsModalOpen(true);
+    setIsTambahModalOpen(true);
   };
 
   const openEditModal = (merek: Merek) => {
     setSelectedMerek(merek);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedMerek(null);
+    // TODO: Implement edit modal
   };
 
   const filteredMerek = merekList.filter(merek =>
@@ -298,12 +190,10 @@ export default function AdminMerekPage() {
       </div>
 
       {/* Modal */}
-      <MerekModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        onSubmit={selectedMerek ? handleUpdateMerek : handleCreateMerek}
-        merek={selectedMerek}
-        loading={actionLoading}
+      <TambahMerekModal
+        isOpen={isTambahModalOpen}
+        onClose={() => setIsTambahModalOpen(false)}
+        onSuccess={handleTambahMerekSuccess}
       />
     </DashboardLayout>
   );

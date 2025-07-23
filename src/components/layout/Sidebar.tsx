@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import Image from 'next/image';
 import { 
   Home, 
   Package, 
@@ -208,12 +209,16 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-blue-900 rounded-lg flex items-center justify-center">
-              <div className="text-white font-bold text-xs">BMN</div>
-            </div>
+            <Image
+              src="/logo_semantis.png"
+              alt="SEMANTIS BMN Logo"
+              width={32}
+              height={32}
+              className="object-contain"
+            />
             <div>
-              <h1 className="text-sm font-bold text-gray-900">SEMANTIS</h1>
-              <p className="text-xs text-yellow-500 font-bold">BMN</p>
+              <h1 className="text-sm font-bold text-gray-900">SEMANTIS BMN</h1>
+              <p className="text-xs text-gray-500">Sistem Inventaris</p>
             </div>
           </div>
           

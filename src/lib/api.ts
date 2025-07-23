@@ -23,6 +23,7 @@ import type {
   PeminjamanReport,
   PeminjamanResponse,
   PeminjamanDetailResponse,
+  StatisticsResponse,
 } from '@/types/api';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://inventaris-be.vercel.app';
@@ -187,6 +188,21 @@ export const barangApi = {
     return response.data;
   },
 
+  getByQRCode: async (qrData: string): Promise<ApiResponse<Barang>> => {
+    try {
+      const parsedData = JSON.parse(qrData);
+      if (parsedData.kodeBarang) {
+        return await barangApi.getByKode(parsedData.kodeBarang);
+      } else if (parsedData.id) {
+        return await barangApi.getById(parsedData.id);
+      } else {
+        throw new Error('Invalid QR code format');
+      }
+    } catch {
+      throw new Error('Failed to parse QR code data');
+    }
+  },
+
   create: async (data: CreateBarangRequest): Promise<ApiResponse<Barang>> => {
     const formData = new FormData();
     formData.append('nama', data.nama);
@@ -313,6 +329,13 @@ export const peminjamanApi = {
       });
       return response.data;
     }
+  },
+};
+
+export const statisticsApi = {
+  get: async (): Promise<StatisticsResponse> => {
+    const response = await api.get('/statistics');
+    return response.data;
   },
 };
 

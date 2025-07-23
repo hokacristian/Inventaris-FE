@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import CameraCapture from '@/components/camera/CameraCapture';
 import { peminjamanApi } from '@/lib/api';
 import type { Peminjaman } from '@/types/api';
 import { 
@@ -16,7 +17,8 @@ import {
   AlertCircle,
   Camera,
   MessageSquare,
-  Eye
+  Eye,
+  Upload
 } from 'lucide-react';
 
 interface ApprovalModalProps {
@@ -32,7 +34,9 @@ function ApprovalModal({ request, isOpen, onClose, onApprove, onReject }: Approv
   const [penanggungJawab, setPenanggungJawab] = useState('');
   const [catatan, setCatatan] = useState('');
   const [foto, setFoto] = useState<File | null>(null);
+  const [fotoPreview, setFotoPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isCameraCaptureOpen, setIsCameraCaptureOpen] = useState(false);
 
   const handleSubmit = async () => {
     if (!request) return;
@@ -57,12 +61,37 @@ function ApprovalModal({ request, isOpen, onClose, onApprove, onReject }: Approv
       setPenanggungJawab('');
       setCatatan('');
       setFoto(null);
+      setFotoPreview(null);
       onClose();
     } catch (error) {
       console.error('Failed to process request:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCameraCapture = (file: File) => {
+    setFoto(file);
+    const previewUrl = URL.createObjectURL(file);
+    setFotoPreview(previewUrl);
+    setIsCameraCaptureOpen(false);
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFoto(file);
+      const previewUrl = URL.createObjectURL(file);
+      setFotoPreview(previewUrl);
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    if (fotoPreview) {
+      URL.revokeObjectURL(fotoPreview);
+    }
+    setFoto(null);
+    setFotoPreview(null);
   };
 
   if (!isOpen || !request) return null;
@@ -127,21 +156,69 @@ function ApprovalModal({ request, isOpen, onClose, onApprove, onReject }: Approv
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Foto Dokumentasi (Opsional)
               </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setFoto(e.target.files?.[0] || null)}
-                  className="hidden"
-                  id="foto-upload"
-                />
-                <label htmlFor="foto-upload" className="cursor-pointer flex flex-col items-center">
-                  <Camera className="w-8 h-8 text-gray-400 mb-2" />
-                  <span className="text-sm text-gray-600">
-                    {foto ? foto.name : 'Klik untuk upload foto'}
-                  </span>
-                </label>
-              </div>
+              
+              {fotoPreview ? (
+                <div className="space-y-3">
+                  <img
+                    src={fotoPreview}
+                    alt="Preview"
+                    className="w-full h-32 object-cover rounded-lg border"
+                  />
+                  <div className="flex space-x-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsCameraCaptureOpen(true)}
+                      className="flex-1"
+                    >
+                      <Camera className="w-4 h-4 mr-1" />
+                      Ambil Ulang
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleRemovePhoto}
+                      className="flex-1"
+                    >
+                      Hapus Foto
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                  <div className="flex flex-col items-center space-y-2">
+                    <Camera className="w-8 h-8 text-gray-400" />
+                    <p className="text-sm text-gray-600 text-center">
+                      Ambil foto atau upload dari galeri
+                    </p>
+                    <div className="flex space-x-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsCameraCaptureOpen(true)}
+                      >
+                        <Camera className="w-4 h-4 mr-1" />
+                        Kamera
+                      </Button>
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileUpload}
+                          className="hidden"
+                        />
+                        <div className="inline-flex items-center px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
+                          <Upload className="w-4 h-4 mr-1" />
+                          Upload
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ) : (
@@ -180,6 +257,14 @@ function ApprovalModal({ request, isOpen, onClose, onApprove, onReject }: Approv
           </Button>
         </div>
       </div>
+
+      {/* Camera Capture Modal */}
+      <CameraCapture
+        isOpen={isCameraCaptureOpen}
+        onClose={() => setIsCameraCaptureOpen(false)}
+        onCapture={handleCameraCapture}
+        title="Foto Dokumentasi Peminjaman"
+      />
     </div>
   );
 }

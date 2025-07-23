@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+import { TambahLokasiModal } from '@/components/modals';
 import { lokasiApi } from '@/lib/api';
 import type { Lokasi } from '@/types/api';
 import { 
@@ -14,86 +14,15 @@ import {
   Search,
   AlertCircle
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
-interface LokasiModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (nama: string) => Promise<void>;
-  lokasi?: Lokasi | null;
-  loading?: boolean;
-}
-
-function LokasiModal({ isOpen, onClose, onSubmit, lokasi, loading }: LokasiModalProps) {
-  const [nama, setNama] = useState('');
-
-  useEffect(() => {
-    if (lokasi) {
-      setNama(lokasi.nama);
-    } else {
-      setNama('');
-    }
-  }, [lokasi]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!nama.trim()) {
-      alert('Nama lokasi harus diisi');
-      return;
-    }
-    await onSubmit(nama.trim());
-    setNama('');
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full p-6">
-        <h3 className="text-lg font-semibold mb-4">
-          {lokasi ? 'Edit Lokasi' : 'Tambah Lokasi'}
-        </h3>
-        
-        <form onSubmit={handleSubmit}>
-          <Input
-            label="Nama Lokasi"
-            value={nama}
-            onChange={(e) => setNama(e.target.value)}
-            placeholder="Masukkan nama lokasi"
-            required
-          />
-          
-          <div className="flex space-x-3 mt-6">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              className="flex-1"
-              disabled={loading}
-            >
-              Batal
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={loading}
-              className="flex-1"
-            >
-              {loading ? 'Menyimpan...' : lokasi ? 'Update' : 'Simpan'}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
 
 export default function AdminLokasiPage() {
   const [lokasiList, setLokasiList] = useState<Lokasi[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTambahModalOpen, setIsTambahModalOpen] = useState(false);
   const [selectedLokasi, setSelectedLokasi] = useState<Lokasi | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
     loadLokasi();
@@ -107,48 +36,17 @@ export default function AdminLokasiPage() {
       }
     } catch (error) {
       console.error('Failed to load lokasi:', error);
-      alert('Gagal memuat data lokasi');
+      toast.error('Gagal memuat data lokasi');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCreateLokasi = async (nama: string) => {
-    setActionLoading(true);
-    try {
-      const response = await lokasiApi.create({ nama });
-      if (response.success) {
-        alert('Lokasi berhasil ditambahkan');
-        setIsModalOpen(false);
-        loadLokasi();
-      }
-    } catch (error) {
-      console.error('Failed to create lokasi:', error);
-      alert('Gagal menambahkan lokasi');
-    } finally {
-      setActionLoading(false);
-    }
+  const handleTambahLokasiSuccess = () => {
+    loadLokasi();
   };
 
-  const handleUpdateLokasi = async (nama: string) => {
-    if (!selectedLokasi) return;
-    
-    setActionLoading(true);
-    try {
-      const response = await lokasiApi.update(selectedLokasi.id, { nama });
-      if (response.success) {
-        alert('Lokasi berhasil diupdate');
-        setIsModalOpen(false);
-        setSelectedLokasi(null);
-        loadLokasi();
-      }
-    } catch (error) {
-      console.error('Failed to update lokasi:', error);
-      alert('Gagal mengupdate lokasi');
-    } finally {
-      setActionLoading(false);
-    }
-  };
+  // Function removed - not currently used in the UI
 
   const handleDeleteLokasi = async (id: string) => {
     if (!confirm('Apakah Anda yakin ingin menghapus lokasi ini?')) return;
@@ -156,28 +54,22 @@ export default function AdminLokasiPage() {
     try {
       const response = await lokasiApi.delete(id);
       if (response.success) {
-        alert('Lokasi berhasil dihapus');
+        toast.success('Lokasi berhasil dihapus');
         loadLokasi();
       }
     } catch (error) {
       console.error('Failed to delete lokasi:', error);
-      alert('Gagal menghapus lokasi. Mungkin lokasi masih digunakan oleh barang.');
+      toast.error('Gagal menghapus lokasi. Mungkin lokasi masih digunakan oleh barang.');
     }
   };
 
   const openCreateModal = () => {
-    setSelectedLokasi(null);
-    setIsModalOpen(true);
+    setIsTambahModalOpen(true);
   };
 
   const openEditModal = (lokasi: Lokasi) => {
     setSelectedLokasi(lokasi);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedLokasi(null);
+    // TODO: Implement edit modal
   };
 
   const filteredLokasi = lokasiList.filter(lokasi =>
@@ -298,12 +190,10 @@ export default function AdminLokasiPage() {
       </div>
 
       {/* Modal */}
-      <LokasiModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        onSubmit={selectedLokasi ? handleUpdateLokasi : handleCreateLokasi}
-        lokasi={selectedLokasi}
-        loading={actionLoading}
+      <TambahLokasiModal
+        isOpen={isTambahModalOpen}
+        onClose={() => setIsTambahModalOpen(false)}
+        onSuccess={handleTambahLokasiSuccess}
       />
     </DashboardLayout>
   );
