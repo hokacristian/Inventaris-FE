@@ -151,16 +151,6 @@ export default function AdminLoginPage() {
             >
               {loading ? 'Login...' : 'Login'}
             </Button>
-
-            <div className="text-center">
-              <button
-                type="button"
-                onClick={setDemoCredentials}
-                className="text-sm text-blue-600 hover:text-blue-800 underline"
-              >
-                Gunakan kredensial demo admin
-              </button>
-            </div>
           </form>
         </div>
 

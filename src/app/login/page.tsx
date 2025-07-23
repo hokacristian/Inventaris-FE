@@ -167,22 +167,6 @@ export default function LoginPage() {
               {loading ? 'Masuk...' : 'Masuk'}
             </Button>
 
-            <div className="text-center space-y-2">
-              <button
-                type="button"
-                onClick={setDemoCredentials}
-                className="text-sm text-blue-600 hover:text-blue-800 underline block w-full"
-              >
-                Gunakan kredensial demo {loginType}
-              </button>
-              
-              <a 
-                href="/test-api" 
-                className="text-xs text-gray-500 hover:text-gray-700 underline block"
-              >
-                Debug API Connection
-              </a>
-            </div>
           </form>
 
           <div className="mt-6 text-center text-sm text-gray-600">

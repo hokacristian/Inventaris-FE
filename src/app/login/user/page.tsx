@@ -162,15 +162,7 @@ export default function UserLoginPage() {
               {loading ? 'Login...' : 'Login'}
             </Button>
 
-            <div className="text-center space-y-2">
-              <button
-                type="button"
-                onClick={setDemoCredentials}
-                className="text-sm text-blue-600 hover:text-blue-800 underline block w-full"
-              >
-                Gunakan kredensial demo user
-              </button>
-            </div>
+            
           </form>
 
           {/* Register Link */}
