@@ -35,21 +35,24 @@ const statusColors = {
   PENDING: 'bg-yellow-100 text-yellow-800 border-yellow-200',
   DIPINJAM: 'bg-green-100 text-green-800 border-green-200',
   REJECTED: 'bg-red-100 text-red-800 border-red-200',
-  RETURNED: 'bg-blue-100 text-blue-800 border-blue-200'
+  RETURNED: 'bg-blue-100 text-blue-800 border-blue-200',
+  DIKEMBALIKAN: 'bg-blue-100 text-blue-800 border-blue-200'
 };
 
 const statusIcons = {
   PENDING: <Clock className="w-4 h-4" />,
   DIPINJAM: <CheckCircle className="w-4 h-4" />,
   REJECTED: <XCircle className="w-4 h-4" />,
-  RETURNED: <RotateCcw className="w-4 h-4" />
+  RETURNED: <RotateCcw className="w-4 h-4" />,
+  DIKEMBALIKAN: <RotateCcw className="w-4 h-4" />
 };
 
 const statusLabels = {
   PENDING: 'Menunggu Persetujuan',
   DIPINJAM: 'Sedang Dipinjam',
   REJECTED: 'Ditolak',
-  RETURNED: 'Dikembalikan'
+  RETURNED: 'Dikembalikan',
+  DIKEMBALIKAN: 'Dikembalikan'
 };
 
 export default function PeminjamanDetailPage({ params }: PeminjamanDetailPageProps) {

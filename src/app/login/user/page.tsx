@@ -65,7 +65,7 @@ export default function UserLoginPage() {
     });
   };
 
-  const setDemoCredentials = () => {
+  const _setDemoCredentials = () => {
     setFormData({
       email: 'user@example.com',
       password: 'password123',

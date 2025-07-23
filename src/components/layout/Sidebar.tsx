@@ -8,14 +8,11 @@ import Image from 'next/image';
 import { 
   Home, 
   Package, 
-  Users, 
   Building, 
   Tag, 
-  Settings, 
   BarChart3, 
   Search,
   History,
-  Eye,
   ChevronDown,
   ChevronRight,
   X,
@@ -93,32 +90,17 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
     },
     {
       label: 'Cari Barang',
-      href: '/search',
+      href: '/user/search',
       icon: <Search size={20} />
     },
     {
-      label: 'Lihat Inventaris',
-      href: '/inventaris',
-      icon: <Eye size={20} />
+      label: 'Status Peminjaman',
+      href: '/user/status',
+      icon: <ClipboardList size={20} />
     },
     {
-      label: 'Tambah Barang',
-      href: '/barang/add',
-      icon: <Package size={20} />
-    },
-    {
-      label: 'Kategori',
-      href: '/kategori',
-      icon: <Tag size={20} />
-    },
-    {
-      label: 'Lokasi',
-      href: '/lokasi',
-      icon: <Building size={20} />
-    },
-    {
-      label: 'Riwayat Aktivitas',
-      href: '/history',
+      label: 'Riwayat Peminjaman',
+      href: '/user/history',
       icon: <History size={20} />
     }
   ];

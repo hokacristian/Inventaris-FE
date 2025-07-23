@@ -64,7 +64,7 @@ export default function LoginPage() {
     });
   };
 
-  const setDemoCredentials = () => {
+  const _setDemoCredentials = () => {
     if (loginType === 'admin') {
       setFormData({
         email: 'admin@inventaris.com',

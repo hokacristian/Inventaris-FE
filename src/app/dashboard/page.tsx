@@ -3,19 +3,59 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/Button';
-import { Package, Building, Tag, Search, Eye, History } from 'lucide-react';
+import { Package, Building, Tag, Search, History } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import api from '@/lib/api';
+import toast from 'react-hot-toast';
 
 export default function DashboardPage() {
   const { user, isAdmin } = useAuth();
   const router = useRouter();
+  const [stats, setStats] = useState({
+    totalBarang: 0,
+    totalKategori: 0,
+    totalLokasi: 0,
+    myPeminjaman: 0
+  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user && isAdmin) {
       router.push('/admin/dashboard');
+    } else if (user && !isAdmin) {
+      fetchUserStats();
     }
   }, [user, isAdmin, router]);
+
+  const fetchUserStats = async () => {
+    try {
+      setLoading(true);
+      const [barangRes, kategoriRes, lokasiRes, peminjamanRes] = await Promise.all([
+        api.get('/barang'),
+        api.get('/kategori'),
+        api.get('/lokasi'),
+        api.get('/peminjaman/my-requests').catch(() => ({ data: { data: [] } }))
+      ]);
+
+      const barangData = barangRes.data.data.items || barangRes.data.data || [];
+      const kategoriData = kategoriRes.data.data.items || kategoriRes.data.data || [];
+      const lokasiData = lokasiRes.data.data.items || lokasiRes.data.data || [];
+      const peminjamanData = peminjamanRes.data.data || peminjamanRes.data || [];
+
+      setStats({
+        totalBarang: barangData.length,
+        totalKategori: kategoriData.length,
+        totalLokasi: lokasiData.length,
+        myPeminjaman: peminjamanData.filter((p: { status: string }) => p.status === 'PENDING' || p.status === 'DIPINJAM').length
+      });
+    } catch (error) {
+      console.error('Error fetching user stats:', error);
+      toast.error('Gagal memuat statistik dashboard');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!user) {
     return <div>Loading...</div>;
@@ -39,7 +79,7 @@ export default function DashboardPage() {
         </div>
 
         {/* User Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="p-2 bg-blue-100 rounded-lg">
@@ -47,7 +87,9 @@ export default function DashboardPage() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Barang</p>
-                <p className="text-2xl font-bold text-gray-900">-</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {loading ? '-' : stats.totalBarang}
+                </p>
               </div>
             </div>
           </div>
@@ -59,7 +101,9 @@ export default function DashboardPage() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Kategori Tersedia</p>
-                <p className="text-2xl font-bold text-gray-900">-</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {loading ? '-' : stats.totalKategori}
+                </p>
               </div>
             </div>
           </div>
@@ -71,7 +115,23 @@ export default function DashboardPage() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Lokasi Tersedia</p>
-                <p className="text-2xl font-bold text-gray-900">-</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {loading ? '-' : stats.totalLokasi}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center">
+              <div className="p-2 bg-orange-100 rounded-lg">
+                <History className="h-6 w-6 text-orange-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Peminjaman Aktif</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {loading ? '-' : stats.myPeminjaman}
+                </p>
               </div>
             </div>
           </div>
@@ -86,34 +146,30 @@ export default function DashboardPage() {
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <Button className="flex items-center justify-center gap-2 h-24">
+              <Button 
+                onClick={() => router.push('/user/search')}
+                className="flex items-center justify-center gap-2 h-24"
+              >
                 <Search size={20} />
                 <span>Cari Barang</span>
               </Button>
               
-              <Button variant="secondary" className="flex items-center justify-center gap-2 h-24">
-                <Eye size={20} />
-                <span>Lihat Inventaris</span>
-              </Button>
-              
-              <Button variant="secondary" className="flex items-center justify-center gap-2 h-24">
+              <Button 
+                onClick={() => router.push('/user/status')}
+                variant="secondary" 
+                className="flex items-center justify-center gap-2 h-24"
+              >
                 <Package size={20} />
-                <span>Tambah Barang</span>
+                <span>Status Peminjaman</span>
               </Button>
               
-              <Button variant="secondary" className="flex items-center justify-center gap-2 h-24">
-                <Tag size={20} />
-                <span>Lihat Kategori</span>
-              </Button>
-              
-              <Button variant="secondary" className="flex items-center justify-center gap-2 h-24">
-                <Building size={20} />
-                <span>Lihat Lokasi</span>
-              </Button>
-              
-              <Button variant="secondary" className="flex items-center justify-center gap-2 h-24">
+              <Button 
+                onClick={() => router.push('/user/history')}
+                variant="secondary" 
+                className="flex items-center justify-center gap-2 h-24"
+              >
                 <History size={20} />
-                <span>Riwayat Aktivitas</span>
+                <span>Riwayat Peminjaman</span>
               </Button>
             </div>
           </div>
