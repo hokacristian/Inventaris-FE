@@ -82,24 +82,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         { label: 'Laporan', href: '/admin/peminjaman/reports', icon: <BarChart3 size={16} /> }
       ]
     },
-    {
-      label: 'Pelaporan',
-      icon: <BarChart3 size={20} />,
-      children: [
-        { label: 'Penanggung Jawab', href: '/admin/pelaporan/pj', icon: <Users size={16} /> },
-        { label: 'Riwayat', href: '/admin/pelaporan/riwayat', icon: <History size={16} /> }
-      ]
-    },
-    {
-      label: 'Pengguna',
-      href: '/admin/users',
-      icon: <Users size={20} />
-    },
-    {
-      label: 'Pengaturan',
-      href: '/admin/settings',
-      icon: <Settings size={20} />
-    }
+    
   ];
 
   const userMenuItems: SidebarItem[] = [
