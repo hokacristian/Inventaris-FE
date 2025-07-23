@@ -97,8 +97,8 @@ function ApprovalModal({ request, isOpen, onClose, onApprove, onReject }: Approv
   if (!isOpen || !request) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full p-6">
+    <div className="fixed inset-0 flex items-center justify-center p-4 z-50 pointer-events-none">
+      <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-2xl border border-gray-200 pointer-events-auto">
         <h3 className="text-lg font-semibold mb-4">
           {mode === 'approve' ? 'Setujui Permintaan' : 'Tolak Permintaan'}
         </h3>
