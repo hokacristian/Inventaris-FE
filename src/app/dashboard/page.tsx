@@ -174,21 +174,7 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
-
-        {/* Recent Activity */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900">
-              Aktivitas Terbaru Anda
-            </h3>
-          </div>
-          <div className="p-6">
-            <div className="text-center text-gray-500 py-8">
-              <p>Belum ada aktivitas</p>
-              <p className="text-sm mt-2">Aktivitas Anda akan muncul di sini</p>
-            </div>
-          </div>
-        </div>
+        
       </div>
     </DashboardLayout>
   );
