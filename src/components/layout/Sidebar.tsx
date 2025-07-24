@@ -73,7 +73,6 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
       label: 'Peminjaman',
       icon: <ClipboardList size={20} />,
       children: [
-        { label: 'Semua Permintaan', href: '/admin/peminjaman/requests', icon: <ClipboardList size={16} /> },
         { label: 'Menunggu Persetujuan', href: '/admin/peminjaman/approve', icon: <CheckCircle size={16} /> },
         { label: 'Sedang Dipinjam', href: '/admin/peminjaman/approved', icon: <BookOpen size={16} /> },
         { label: 'Laporan', href: '/admin/peminjaman/reports', icon: <BarChart3 size={16} /> }

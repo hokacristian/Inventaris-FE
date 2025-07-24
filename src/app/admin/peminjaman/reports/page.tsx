@@ -32,7 +32,9 @@ export default function AdminBorrowingReportsPage() {
   const loadReports = async () => {
     try {
       const response = await peminjamanApi.getReports();
-      if (response.success) {
+      console.log('Reports response:', response); // Debug log
+      // Handle the actual API response structure
+      if (response.status === 'success') {
         setReport(response.data);
       }
     } catch (error) {
@@ -42,9 +44,17 @@ export default function AdminBorrowingReportsPage() {
 
   const loadAllRequests = async () => {
     try {
-      const response = await peminjamanApi.getAllRequests();
+      const response = await peminjamanApi.getReports();
+      console.log('All requests response:', response); // Debug log
+      // Handle the actual API response structure
       if (response.status === 'success') {
-        setAllRequests(response.data);
+        // Combine all status arrays to get all requests
+        const allData = [
+          ...response.data.pending,
+          ...response.data.dipinjam,
+          ...response.data.dikembalikan
+        ];
+        setAllRequests(allData);
       }
     } catch (error) {
       console.error('Failed to load all requests:', error);
@@ -75,7 +85,7 @@ export default function AdminBorrowingReportsPage() {
 
   const getApprovalRate = (requests: Peminjaman[] = allRequests) => {
     const totalProcessed = requests.filter(req => req.status !== 'PENDING').length;
-    const approved = getStatusCount('DIPINJAM', requests) + getStatusCount('RETURNED', requests);
+    const approved = getStatusCount('DIPINJAM', requests) + getStatusCount('DIKEMBALIKAN', requests);
     return totalProcessed > 0 ? Math.round((approved / totalProcessed) * 100) : 0;
   };
 
@@ -145,7 +155,7 @@ export default function AdminBorrowingReportsPage() {
               <p className="text-sm text-gray-600">Total Permintaan</p>
               <BarChart3 className="w-5 h-5 text-gray-400" />
             </div>
-            <p className="text-3xl font-bold text-gray-900">{report?.totalPeminjaman || 0}</p>
+            <p className="text-3xl font-bold text-gray-900">{allRequests.length}</p>
             <p className="text-sm text-gray-500 mt-1">
               {periodRequests.length} dalam {selectedPeriod} hari terakhir
             </p>
@@ -198,7 +208,7 @@ export default function AdminBorrowingReportsPage() {
                   <span className="text-sm font-medium text-gray-900">Menunggu</span>
                 </div>
                 <span className="text-lg font-bold text-yellow-700">
-                  {report?.peminjamanPending || 0}
+                  {report?.summary?.totalPending || 0}
                 </span>
               </div>
               
@@ -208,7 +218,7 @@ export default function AdminBorrowingReportsPage() {
                   <span className="text-sm font-medium text-gray-900">Sedang Dipinjam</span>
                 </div>
                 <span className="text-lg font-bold text-green-700">
-                  {report?.peminjamanDipinjam || getStatusCount('DIPINJAM')}
+                  {report?.summary?.totalDipinjam || 0}
                 </span>
               </div>
               
@@ -218,17 +228,7 @@ export default function AdminBorrowingReportsPage() {
                   <span className="text-sm font-medium text-gray-900">Dikembalikan</span>
                 </div>
                 <span className="text-lg font-bold text-blue-700">
-                  {report?.peminjamanReturned || 0}
-                </span>
-              </div>
-              
-              <div className="flex items-center justify-between p-4 bg-red-50 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                  <span className="text-sm font-medium text-gray-900">Ditolak</span>
-                </div>
-                <span className="text-lg font-bold text-red-700">
-                  {report?.peminjamanRejected || 0}
+                  {report?.summary?.totalDikembalikan || 0}
                 </span>
               </div>
             </div>
@@ -236,32 +236,49 @@ export default function AdminBorrowingReportsPage() {
 
           <div className="bg-white p-6 rounded-lg shadow border">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Barang Paling Sering Dipinjam</h3>
-            {report?.topBorrowedItems && report.topBorrowedItems.length > 0 ? (
-              <div className="space-y-3">
-                {report.topBorrowedItems.slice(0, 5).map((item, index) => (
-                  <div key={item.barang.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
-                        <span className="text-xs font-bold text-yellow-700">#{index + 1}</span>
+            {(() => {
+              // Calculate most borrowed items from the data
+              const itemCounts: { [key: string]: { barang: any; count: number } } = {};
+              if (report) {
+                [...report.dikembalikan, ...report.dipinjam].forEach(req => {
+                  const key = req.barang.id;
+                  if (!itemCounts[key]) {
+                    itemCounts[key] = { barang: req.barang, count: 0 };
+                  }
+                  itemCounts[key].count++;
+                });
+              }
+              const topItems = Object.values(itemCounts)
+                .sort((a: any, b: any) => b.count - a.count)
+                .slice(0, 5);
+              
+              return topItems.length > 0 ? (
+                <div className="space-y-3">
+                  {topItems.map((item, index) => (
+                    <div key={item.barang.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                          <span className="text-xs font-bold text-yellow-700">#{index + 1}</span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{item.barang.nama}</p>
+                          <p className="text-xs text-gray-500">{item.barang.kodeBarang}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{item.barang.nama}</p>
-                        <p className="text-xs text-gray-500">{item.barang.kodeBarang}</p>
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-gray-900">{item.count}</p>
+                        <p className="text-xs text-gray-500">kali dipinjam</p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-gray-900">{item.count}</p>
-                      <p className="text-xs text-gray-500">kali dipinjam</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">Belum ada data peminjaman</p>
-              </div>
-            )}
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-600">Belum ada data peminjaman</p>
+                </div>
+              );
+            })()}
           </div>
         </div>
 

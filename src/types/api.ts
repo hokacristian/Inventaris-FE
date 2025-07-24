@@ -214,15 +214,14 @@ export interface ReturnPeminjamanRequest {
 }
 
 export interface PeminjamanReport {
-  totalPeminjaman: number;
-  peminjamanPending: number;
-  peminjamanDipinjam: number;
-  peminjamanReturned: number;
-  peminjamanRejected: number;
-  topBorrowedItems: Array<{
-    barang: Barang;
-    count: number;
-  }>;
+  pending: Peminjaman[];
+  dipinjam: Peminjaman[];
+  dikembalikan: Peminjaman[];
+  summary: {
+    totalPending: number;
+    totalDipinjam: number;
+    totalDikembalikan: number;
+  };
 }
 
 // API Response wrapper for peminjaman

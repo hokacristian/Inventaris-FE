@@ -279,7 +279,7 @@ export const peminjamanApi = {
     return response.data;
   },
 
-  getReports: async (): Promise<ApiResponse<PeminjamanReport>> => {
+  getReports: async (): Promise<{status: string; data: PeminjamanReport}> => {
     const response = await api.get('/peminjaman/admin/reports');
     return response.data;
   },
