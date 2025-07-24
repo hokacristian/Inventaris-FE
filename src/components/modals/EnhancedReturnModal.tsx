@@ -269,13 +269,16 @@ export default function EnhancedReturnModal({
 
               <div className="flex flex-col space-y-3">
                 <Button
-                  onClick={() => setIsQRScannerOpen(true)}
-                  className="flex items-center justify-center gap-2"
-                  disabled={scanLoading}
-                >
-                  <QrCode className="w-4 h-4" />
-                  Buka Scanner QR
-                </Button>
+  onClick={() => {
+    setIsQRScannerOpen(true);
+    console.log('QR Scanner dibuka'); // Debug log
+  }}
+  className="flex items-center justify-center gap-2"
+  disabled={scanLoading}
+>
+  <QrCode className="w-4 h-4" />
+  Buka Scanner QR
+</Button>
                 
                 <Button
                   variant="outline"
@@ -298,7 +301,7 @@ export default function EnhancedReturnModal({
                   value={penanggungJawab}
                   onChange={(e) => setPenanggungJawab(e.target.value)}
                   placeholder="Nama lengkap penanggung jawab"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 bg-white text-gray-900 placeholder-gray-500"
                   required
                 />
               </div>
@@ -311,7 +314,7 @@ export default function EnhancedReturnModal({
                   value={catatan}
                   onChange={(e) => setCatatan(e.target.value)}
                   placeholder="Kondisi barang saat dikembalikan, catatan khusus, dll..."
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 bg-white text-gray-900 placeholder-gray-500"
                   rows={3}
                   required
                 />

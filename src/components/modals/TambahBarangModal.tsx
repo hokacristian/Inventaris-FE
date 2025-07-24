@@ -102,7 +102,7 @@ export function TambahBarangModal({
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]"
+      className="fixed inset-0 bg-transparent flex items-center justify-center p-4 z-[60]"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -137,7 +137,7 @@ export function TambahBarangModal({
               value={formData.deskripsi}
               onChange={(e) => handleInputChange('deskripsi', e.target.value)}
               placeholder="Masukkan deskripsi barang"
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 bg-white text-gray-900 placeholder-gray-500"
               rows={3}
             />
           </div>
@@ -149,12 +149,12 @@ export function TambahBarangModal({
             <select
               value={formData.kategoriId}
               onChange={(e) => handleInputChange('kategoriId', e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 bg-white"
               required
             >
-              <option value="">Pilih Kategori</option>
+              <option value="" className="bg-white text-gray-900">Pilih Kategori</option>
               {kategoriList.map((kategori) => (
-                <option key={kategori.id} value={kategori.id}>
+                <option key={kategori.id} value={kategori.id} className="bg-white text-gray-900">
                   {kategori.nama}
                 </option>
               ))}
@@ -168,12 +168,12 @@ export function TambahBarangModal({
             <select
               value={formData.merekId}
               onChange={(e) => handleInputChange('merekId', e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 bg-white"
               required
             >
-              <option value="">Pilih Merek</option>
+              <option value="" className="bg-white text-gray-900">Pilih Merek</option>
               {merekList.map((merek) => (
-                <option key={merek.id} value={merek.id}>
+                <option key={merek.id} value={merek.id} className="bg-white text-gray-900">
                   {merek.nama}
                 </option>
               ))}
@@ -187,12 +187,12 @@ export function TambahBarangModal({
             <select
               value={formData.lokasiId}
               onChange={(e) => handleInputChange('lokasiId', e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 bg-white"
               required
             >
-              <option value="">Pilih Lokasi</option>
+              <option value="" className="bg-white text-gray-900">Pilih Lokasi</option>
               {lokasiList.map((lokasi) => (
-                <option key={lokasi.id} value={lokasi.id}>
+                <option key={lokasi.id} value={lokasi.id} className="bg-white text-gray-900">
                   {lokasi.nama}
                 </option>
               ))}
@@ -206,12 +206,12 @@ export function TambahBarangModal({
             <select
               value={formData.kondisi}
               onChange={(e) => handleInputChange('kondisi', e.target.value as 'BAIK' | 'RUSAK_RINGAN' | 'RUSAK_BERAT')}
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 bg-white"
               required
             >
-              <option value="BAIK">Baik</option>
-              <option value="RUSAK_RINGAN">Rusak Ringan</option>
-              <option value="RUSAK_BERAT">Rusak Berat</option>
+              <option value="BAIK" className="bg-white text-gray-900">Baik</option>
+              <option value="RUSAK_RINGAN" className="bg-white text-gray-900">Rusak Ringan</option>
+              <option value="RUSAK_BERAT" className="bg-white text-gray-900">Rusak Berat</option>
             </select>
           </div>
 

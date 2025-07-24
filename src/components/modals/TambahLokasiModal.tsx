@@ -69,7 +69,7 @@ export function TambahLokasiModal({ isOpen, onClose, onSuccess }: TambahLokasiMo
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]"
+      className="fixed inset-0 bg-transparent flex items-center justify-center p-4 z-[60]"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -104,7 +104,7 @@ export function TambahLokasiModal({ isOpen, onClose, onSuccess }: TambahLokasiMo
               value={formData.alamat}
               onChange={(e) => handleInputChange('alamat', e.target.value)}
               placeholder="Masukkan alamat lengkap lokasi"
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 bg-white text-gray-900 placeholder-gray-500"
               rows={2}
             />
           </div>
@@ -117,7 +117,7 @@ export function TambahLokasiModal({ isOpen, onClose, onSuccess }: TambahLokasiMo
               value={formData.deskripsi}
               onChange={(e) => handleInputChange('deskripsi', e.target.value)}
               placeholder="Masukkan deskripsi lokasi (opsional)"
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 bg-white text-gray-900 placeholder-gray-500"
               rows={3}
             />
           </div>

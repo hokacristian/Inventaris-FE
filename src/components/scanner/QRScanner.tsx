@@ -23,21 +23,38 @@ export default function QRScanner({ isOpen, onClose, onScan, title = "Scan QR Co
       setError(null);
       setIsScanning(true);
 
-      // Request camera permission
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
-          facingMode: 'environment' // Use back camera if available
-        } 
-      });
-      setHasPermission(true);
-
-      // Stop the stream immediately as ZXing will handle it
-      stream.getTracks().forEach(track => track.stop());
+      // Check camera permission first
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          video: { 
+            facingMode: 'environment' // Use back camera if available
+          } 
+        });
+        setHasPermission(true);
+        // Stop the test stream
+        stream.getTracks().forEach(track => track.stop());
+      } catch (permissionError) {
+        console.error('Camera permission error:', permissionError);
+        setHasPermission(false);
+        if (permissionError instanceof Error) {
+          if (permissionError.name === 'NotAllowedError') {
+            setError('Camera access was denied. Please allow camera access and try again.');
+          } else if (permissionError.name === 'NotFoundError') {
+            setError('No camera device found. Please ensure you have a camera connected.');
+          } else {
+            setError('Failed to access camera. Please check your camera permissions.');
+          }
+        } else {
+          setError('An unknown error occurred while accessing the camera.');
+        }
+        setIsScanning(false);
+        return;
+      }
 
       // Initialize ZXing reader
       readerRef.current = new BrowserMultiFormatReader();
 
-      // Start scanning
+      // Start scanning - ZXing will handle camera access
       if (videoRef.current) {
         await readerRef.current.decodeFromVideoDevice(
           null, // Use default video device
@@ -54,18 +71,11 @@ export default function QRScanner({ isOpen, onClose, onScan, title = "Scan QR Co
         );
       }
     } catch (err) {
-      console.error('Camera access error:', err);
-      setHasPermission(false);
+      console.error('ZXing scanner error:', err);
       if (err instanceof Error) {
-        if (err.name === 'NotAllowedError') {
-          setError('Camera access was denied. Please allow camera access and try again.');
-        } else if (err.name === 'NotFoundError') {
-          setError('No camera device found. Please ensure you have a camera connected.');
-        } else {
-          setError('Failed to access camera. Please check your camera permissions.');
-        }
+        setError(`Scanner initialization failed: ${err.message}`);
       } else {
-        setError('An unknown error occurred while accessing the camera.');
+        setError('Scanner initialization failed. Please try again.');
       }
       setIsScanning(false);
     }
@@ -99,8 +109,8 @@ export default function QRScanner({ isOpen, onClose, onScan, title = "Scan QR Co
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full p-6">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[9999]">
+      <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
             <Camera className="w-5 h-5" />
