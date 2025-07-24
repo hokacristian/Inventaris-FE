@@ -17,9 +17,11 @@ import {
   Tag,
   Building,
   MapPin,
-  Eye
+  Eye,
+  FileText
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { exportBarangListPDF } from '@/utils/pdfExport';
 
 
 const kondisiColors = {
@@ -111,6 +113,17 @@ export default function AdminBarangPage() {
     closeEditModal();
   };
 
+  const handleExportPDF = () => {
+    const statistics = {
+      totalBarang: barangList.length,
+      barangBaik: barangList.filter(b => b.kondisi === 'BAIK').length,
+      barangRusakRingan: barangList.filter(b => b.kondisi === 'RUSAK_RINGAN').length,
+      barangRusakBerat: barangList.filter(b => b.kondisi === 'RUSAK_BERAT').length
+    };
+    
+    exportBarangListPDF(filteredBarang, statistics);
+  };
+
   const filteredBarang = barangList.filter(barang =>
     barang.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
     barang.kodeBarang.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -127,10 +140,16 @@ export default function AdminBarangPage() {
             <h1 className="text-2xl font-bold text-gray-900">Kelola Barang</h1>
             <p className="text-gray-600 mt-1">Tambah, edit, dan hapus barang inventaris</p>
           </div>
-          <Button variant="primary" onClick={openCreateModal}>
-            <Plus className="w-4 h-4 mr-2" />
-            Tambah Barang
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button variant="outline" onClick={handleExportPDF} disabled={loading || barangList.length === 0}>
+              <FileText className="w-4 h-4 mr-2" />
+              Export PDF
+            </Button>
+            <Button variant="primary" onClick={openCreateModal}>
+              <Plus className="w-4 h-4 mr-2" />
+              Tambah Barang
+            </Button>
+          </div>
         </div>
 
         {/* Search */}

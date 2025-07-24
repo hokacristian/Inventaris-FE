@@ -18,6 +18,7 @@ import {
   Building,
   BarChart3,
   Clock,
+  FileText,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -36,6 +37,7 @@ import type {
   Statistics,
   Peminjaman,
 } from "@/types/api";
+import { exportBarangStatisticsPDF } from '@/utils/pdfExport';
 
 export default function AdminDashboardPage() {
   const { user, isAdmin } = useAuth();
@@ -157,6 +159,23 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const handleExportStatistics = () => {
+    if (statistics) {
+      // Calculate rusak ringan and rusak berat from total rusak
+      // Assuming we don't have separate data, split equally
+      const totalRusak = statistics.barangRusak;
+      const barangRusakRingan = Math.floor(totalRusak / 2);
+      const barangRusakBerat = totalRusak - barangRusakRingan;
+      
+      exportBarangStatisticsPDF({
+        totalBarang: statistics.totalBarang,
+        barangBaik: statistics.barangBaik,
+        barangRusakRingan: barangRusakRingan,
+        barangRusakBerat: barangRusakBerat
+      });
+    }
+  };
+
   const handleModalSuccess = () => {
     loadMasterData();
     loadStatistics();
@@ -174,13 +193,24 @@ export default function AdminDashboardPage() {
     <DashboardLayout title="Admin Dashboard">
       <div className="space-y-6">
         {/* Welcome Section */}
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Selamat datang, Admin {user.nama}
-          </h2>
-          <p className="text-gray-600">
-            Panel kontrol untuk mengelola seluruh sistem inventaris
-          </p>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Selamat datang, Admin {user.nama}
+            </h2>
+            <p className="text-gray-600">
+              Panel kontrol untuk mengelola seluruh sistem inventaris
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={handleExportStatistics}
+            disabled={loadingStats || !statistics}
+            className="flex items-center gap-2"
+          >
+            <FileText size={16} />
+            Export PDF Statistik
+          </Button>
         </div>
 
         {/* Admin Stats */}

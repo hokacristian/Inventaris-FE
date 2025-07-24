@@ -6,6 +6,7 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/Button';
 import { peminjamanApi } from '@/lib/api';
 import type { PeminjamanReport, Peminjaman } from '@/types/api';
+import { exportPeminjamanStatisticsPDF } from '@/utils/pdfExport';
 import { 
   BarChart3, 
   TrendingUp,
@@ -14,7 +15,8 @@ import {
   Calendar,
   Download,
   RefreshCw,
-  AlertCircle
+  AlertCircle,
+  FileText
 } from 'lucide-react';
 
 export default function AdminBorrowingReportsPage() {
@@ -79,6 +81,36 @@ export default function AdminBorrowingReportsPage() {
 
   const periodRequests = getFilteredRequests(parseInt(selectedPeriod));
 
+  const handleExportPDF = () => {
+    if (!report) return;
+    
+    const monthNames = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    
+    const currentMonth = monthNames[new Date().getMonth()];
+    const periodText = selectedPeriod === '30' ? currentMonth : 
+                      selectedPeriod === '7' ? '7 Hari Terakhir' :
+                      selectedPeriod === '90' ? '3 Bulan Terakhir' : 'Semua Periode';
+    
+    const transaksiDetail = allRequests.slice(0, 10).map(req => ({
+      tanggal: new Date(req.tanggalPengajuan).toLocaleDateString('id-ID'),
+      namaBarang: req.barang.nama,
+      peminjam: req.user.nama,
+      status: req.status === 'PENDING' ? 'Menunggu' :
+              req.status === 'DIPINJAM' ? 'Sedang Dipinjam' :
+              req.status === 'DIKEMBALIKAN' ? 'Dikembalikan' : 'Ditolak'
+    }));
+    
+    exportPeminjamanStatisticsPDF({
+      bulan: periodText,
+      totalPeminjaman: report.summary.totalPending + report.summary.totalDipinjam + report.summary.totalDikembalikan,
+      totalPengembalian: report.summary.totalDikembalikan,
+      transaksiDetail
+    });
+  };
+
   const getStatusCount = (status: string, requests: Peminjaman[] = allRequests) => {
     return requests.filter(req => req.status === status).length;
   };
@@ -141,9 +173,9 @@ export default function AdminBorrowingReportsPage() {
               <RefreshCw className="w-4 h-4 mr-2" />
               Refresh
             </Button>
-            <Button variant="primary" size="sm">
-              <Download className="w-4 h-4 mr-2" />
-              Export
+            <Button variant="primary" size="sm" onClick={handleExportPDF} disabled={!report}>
+              <FileText className="w-4 h-4 mr-2" />
+              Export PDF
             </Button>
           </div>
         </div>
