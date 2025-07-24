@@ -1,14 +1,22 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Search, Filter, Eye, Package, MapPin, Tag, Bookmark } from 'lucide-react';
-import api from '@/lib/api';
-import { Barang, Kategori, Merek, Lokasi } from '@/types/api';
-import Link from 'next/link';
-import toast from 'react-hot-toast';
+import React, { useState, useEffect, useCallback } from "react";
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import {
+  Search,
+  Filter,
+  Eye,
+  Package,
+  MapPin,
+  Tag,
+  Bookmark,
+} from "lucide-react";
+import api from "@/lib/api";
+import { Barang, Kategori, Merek, Lokasi } from "@/types/api";
+import Link from "next/link";
+import toast from "react-hot-toast";
 
 export default function UserSearchPage() {
   const [barang, setBarang] = useState<Barang[]>([]);
@@ -17,11 +25,11 @@ export default function UserSearchPage() {
   const [brands, setBrands] = useState<Merek[]>([]);
   const [locations, setLocations] = useState<Lokasi[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedBrand, setSelectedBrand] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState('');
-  const [sortBy, setSortBy] = useState('nama');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [sortBy, setSortBy] = useState("nama");
   const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
@@ -33,44 +41,56 @@ export default function UserSearchPage() {
 
     // Filter by search term
     if (searchTerm) {
-      filtered = filtered.filter(item =>
-        item.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.deskripsi.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.kodeBarang.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (item) =>
+          item.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.deskripsi.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.kodeBarang.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Filter by category
     if (selectedCategory) {
-      filtered = filtered.filter(item => item.kategoriId === selectedCategory);
+      filtered = filtered.filter(
+        (item) => item.kategoriId === selectedCategory
+      );
     }
 
     // Filter by brand
     if (selectedBrand) {
-      filtered = filtered.filter(item => item.merekId === selectedBrand);
+      filtered = filtered.filter((item) => item.merekId === selectedBrand);
     }
 
     // Filter by location
     if (selectedLocation) {
-      filtered = filtered.filter(item => item.lokasiId === selectedLocation);
+      filtered = filtered.filter((item) => item.lokasiId === selectedLocation);
     }
 
     // Sort items
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'nama':
+        case "nama":
           return a.nama.localeCompare(b.nama);
-        case 'kodeBarang':
+        case "kodeBarang":
           return a.kodeBarang.localeCompare(b.kodeBarang);
-        case 'createdAt':
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case "createdAt":
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
         default:
           return 0;
       }
     });
 
     setFilteredBarang(filtered);
-  }, [barang, searchTerm, selectedCategory, selectedBrand, selectedLocation, sortBy]);
+  }, [
+    barang,
+    searchTerm,
+    selectedCategory,
+    selectedBrand,
+    selectedLocation,
+    sortBy,
+  ]);
 
   useEffect(() => {
     filterAndSortBarang();
@@ -80,10 +100,10 @@ export default function UserSearchPage() {
     try {
       setLoading(true);
       const [barangRes, kategoriRes, merekRes, lokasiRes] = await Promise.all([
-        api.get('/barang'),
-        api.get('/kategori'),
-        api.get('/merek'),
-        api.get('/lokasi')
+        api.get("/barang"),
+        api.get("/kategori"),
+        api.get("/merek"),
+        api.get("/lokasi"),
       ]);
 
       setBarang(barangRes.data.data.items || barangRes.data.data || []);
@@ -91,36 +111,41 @@ export default function UserSearchPage() {
       setBrands(merekRes.data.data.items || merekRes.data.data || []);
       setLocations(lokasiRes.data.data.items || lokasiRes.data.data || []);
     } catch (error) {
-      console.error('Error fetching data:', error);
-      toast.error('Gagal memuat data barang');
+      console.error("Error fetching data:", error);
+      toast.error("Gagal memuat data barang");
     } finally {
       setLoading(false);
     }
   };
 
   const clearFilters = () => {
-    setSearchTerm('');
-    setSelectedCategory('');
-    setSelectedBrand('');
-    setSelectedLocation('');
-    setSortBy('nama');
+    setSearchTerm("");
+    setSelectedCategory("");
+    setSelectedBrand("");
+    setSelectedLocation("");
+    setSortBy("nama");
   };
 
   const getStatusBadge = (kondisi: string) => {
     const statusMap = {
-      'BAIK': 'bg-green-100 text-green-800',
-      'RUSAK_RINGAN': 'bg-yellow-100 text-yellow-800',
-      'RUSAK_BERAT': 'bg-red-100 text-red-800'
+      BAIK: "bg-green-100 text-green-800",
+      RUSAK_RINGAN: "bg-yellow-100 text-yellow-800",
+      RUSAK_BERAT: "bg-red-100 text-red-800",
     };
-    
+
     const statusText = {
-      'BAIK': 'Baik',
-      'RUSAK_RINGAN': 'Rusak Ringan',
-      'RUSAK_BERAT': 'Rusak Berat'
+      BAIK: "Baik",
+      RUSAK_RINGAN: "Rusak Ringan",
+      RUSAK_BERAT: "Rusak Berat",
     };
 
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusMap[kondisi as keyof typeof statusMap] || 'bg-gray-100 text-gray-800'}`}>
+      <span
+        className={`px-2 py-1 rounded-full text-xs font-medium ${
+          statusMap[kondisi as keyof typeof statusMap] ||
+          "bg-gray-100 text-gray-800"
+        }`}
+      >
         {statusText[kondisi as keyof typeof statusText] || kondisi}
       </span>
     );
@@ -174,7 +199,7 @@ export default function UserSearchPage() {
                   <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-black"
                   >
                     <option value="">Semua Kategori</option>
                     {categories.map((category) => (
@@ -192,7 +217,7 @@ export default function UserSearchPage() {
                   <select
                     value={selectedBrand}
                     onChange={(e) => setSelectedBrand(e.target.value)}
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-black"
                   >
                     <option value="">Semua Merek</option>
                     {brands.map((brand) => (
@@ -210,7 +235,7 @@ export default function UserSearchPage() {
                   <select
                     value={selectedLocation}
                     onChange={(e) => setSelectedLocation(e.target.value)}
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-black"
                   >
                     <option value="">Semua Lokasi</option>
                     {locations.map((location) => (
@@ -228,7 +253,7 @@ export default function UserSearchPage() {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-black"
                   >
                     <option value="nama">Nama A-Z</option>
                     <option value="kodeBarang">Kode Barang</option>
@@ -239,13 +264,10 @@ export default function UserSearchPage() {
 
               <div className="flex justify-between items-center">
                 <p className="text-sm text-gray-600">
-                  Menampilkan {filteredBarang.length} dari {barang.length} barang
+                  Menampilkan {filteredBarang.length} dari {barang.length}{" "}
+                  barang
                 </p>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={clearFilters}
-                >
+                <Button variant="secondary" size="sm" onClick={clearFilters}>
                   Hapus Filter
                 </Button>
               </div>
@@ -256,7 +278,10 @@ export default function UserSearchPage() {
         {/* Results Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredBarang.map((item) => (
-            <div key={item.id} className="bg-white rounded-lg shadow hover:shadow-md transition-shadow">
+            <div
+              key={item.id}
+              className="bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+            >
               <div className="aspect-w-16 aspect-h-9 bg-gray-200 rounded-t-lg overflow-hidden">
                 {item.fotoUrl ? (
                   <img
