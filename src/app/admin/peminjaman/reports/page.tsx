@@ -198,87 +198,38 @@ export default function AdminBorrowingReportsPage() {
         </div>
 
         {/* Status Breakdown */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow border">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Status Permintaan</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                  <span className="text-sm font-medium text-gray-900">Menunggu</span>
-                </div>
-                <span className="text-lg font-bold text-yellow-700">
-                  {report?.summary?.totalPending || 0}
-                </span>
+        <div className="bg-white p-6 rounded-lg shadow border">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Status Permintaan</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <span className="text-sm font-medium text-gray-900">Menunggu</span>
               </div>
-              
-              <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span className="text-sm font-medium text-gray-900">Sedang Dipinjam</span>
-                </div>
-                <span className="text-lg font-bold text-green-700">
-                  {report?.summary?.totalDipinjam || 0}
-                </span>
-              </div>
-              
-              <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                  <span className="text-sm font-medium text-gray-900">Dikembalikan</span>
-                </div>
-                <span className="text-lg font-bold text-blue-700">
-                  {report?.summary?.totalDikembalikan || 0}
-                </span>
-              </div>
+              <span className="text-lg font-bold text-yellow-700">
+                {report?.summary?.totalPending || 0}
+              </span>
             </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow border">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Barang Paling Sering Dipinjam</h3>
-            {(() => {
-              // Calculate most borrowed items from the data
-              const itemCounts: { [key: string]: { barang: any; count: number } } = {};
-              if (report) {
-                [...report.dikembalikan, ...report.dipinjam].forEach(req => {
-                  const key = req.barang.id;
-                  if (!itemCounts[key]) {
-                    itemCounts[key] = { barang: req.barang, count: 0 };
-                  }
-                  itemCounts[key].count++;
-                });
-              }
-              const topItems = Object.values(itemCounts)
-                .sort((a: any, b: any) => b.count - a.count)
-                .slice(0, 5);
-              
-              return topItems.length > 0 ? (
-                <div className="space-y-3">
-                  {topItems.map((item, index) => (
-                    <div key={item.barang.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
-                          <span className="text-xs font-bold text-yellow-700">#{index + 1}</span>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">{item.barang.nama}</p>
-                          <p className="text-xs text-gray-500">{item.barang.kodeBarang}</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-lg font-bold text-gray-900">{item.count}</p>
-                        <p className="text-xs text-gray-500">kali dipinjam</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">Belum ada data peminjaman</p>
-                </div>
-              );
-            })()}
+            
+            <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span className="text-sm font-medium text-gray-900">Sedang Dipinjam</span>
+              </div>
+              <span className="text-lg font-bold text-green-700">
+                {report?.summary?.totalDipinjam || 0}
+              </span>
+            </div>
+            
+            <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                <span className="text-sm font-medium text-gray-900">Dikembalikan</span>
+              </div>
+              <span className="text-lg font-bold text-blue-700">
+                {report?.summary?.totalDikembalikan || 0}
+              </span>
+            </div>
           </div>
         </div>
 
