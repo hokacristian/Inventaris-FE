@@ -7,8 +7,8 @@ import { TambahBarangModal, TambahMerekModal, TambahLokasiModal } from '@/compon
 import { Package, Users, TrendingUp, AlertTriangle, Settings, Tag, Building, BarChart3, Clock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { kategoriApi, merekApi, lokasiApi, statisticsApi } from '@/lib/api';
-import type { Kategori, Merek, Lokasi, Statistics } from '@/types/api';
+import { kategoriApi, merekApi, lokasiApi, statisticsApi, peminjamanApi } from '@/lib/api';
+import type { Kategori, Merek, Lokasi, Statistics, Peminjaman } from '@/types/api';
 
 export default function AdminDashboardPage() {
   const { user, isAdmin } = useAuth();
@@ -23,6 +23,8 @@ export default function AdminDashboardPage() {
   const [lokasiList, setLokasiList] = useState<Lokasi[]>([]);
   const [statistics, setStatistics] = useState<Statistics | null>(null);
   const [loadingStats, setLoadingStats] = useState(true);
+  const [recentActivity, setRecentActivity] = useState<Peminjaman[]>([]);
+  const [loadingActivity, setLoadingActivity] = useState(true);
 
   useEffect(() => {
     if (user && !isAdmin) {
@@ -32,6 +34,7 @@ export default function AdminDashboardPage() {
     if (isAdmin) {
       loadMasterData();
       loadStatistics();
+      loadRecentActivity();
     }
   }, [user, isAdmin, router]);
 
@@ -62,6 +65,27 @@ export default function AdminDashboardPage() {
       console.error('Failed to load statistics:', error);
     } finally {
       setLoadingStats(false);
+    }
+  };
+
+  const loadRecentActivity = async () => {
+    try {
+      setLoadingActivity(true);
+      const response = await peminjamanApi.getReports();
+      if (response.status === 'success') {
+        // Combine all requests and sort by most recent
+        const allRequests = [
+          ...response.data.pending,
+          ...response.data.dipinjam,
+          ...response.data.dikembalikan
+        ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        
+        setRecentActivity(allRequests.slice(0, 5)); // Show only 5 most recent
+      }
+    } catch (error) {
+      console.error('Failed to load recent activity:', error);
+    } finally {
+      setLoadingActivity(false);
     }
   };
 
@@ -250,16 +274,75 @@ export default function AdminDashboardPage() {
         {/* Recent Activity */}
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900">
-              Aktivitas Terbaru (Admin View)
-            </h3>
-          </div>
-          <div className="p-6">
-            <div className="text-center text-gray-500 py-8">
-              <p>Belum ada aktivitas untuk ditampilkan</p>
-              <p className="text-sm mt-2">Aktivitas user dan perubahan sistem akan muncul di sini</p>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-medium text-gray-900">
+                Aktivitas Terbaru (Admin View) 
+              </h3>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => router.push('/admin/peminjaman/reports')}
+              >
+                Lihat Semua
+              </Button>
             </div>
           </div>
+          
+          {loadingActivity ? (
+            <div className="p-6">
+              <div className="text-center text-gray-500 py-8">
+                <div className="inline-flex items-center space-x-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-500"></div>
+                  <span>Memuat aktivitas...</span>
+                </div>
+              </div>
+            </div>
+          ) : recentActivity.length === 0 ? (
+            <div className="p-6">
+              <div className="text-center text-gray-500 py-8">
+                <p>Belum ada aktivitas untuk ditampilkan</p>
+                <p className="text-sm mt-2">Aktivitas peminjaman akan muncul di sini</p>
+              </div>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-200">
+              {recentActivity.map((activity) => (
+                <div key={activity.id} className="p-6 flex items-center justify-between hover:bg-gray-50 cursor-pointer"
+                     onClick={() => router.push(`/admin/peminjaman/${activity.id}`)}>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                      <Package className="w-5 h-5 text-gray-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        {activity.user.nama} - {activity.barang.nama}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {new Date(activity.tanggalPengajuan).toLocaleDateString('id-ID', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                  <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                    activity.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
+                    activity.status === 'DIPINJAM' ? 'bg-green-100 text-green-800' :
+                    activity.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
+                    'bg-blue-100 text-blue-800'
+                  }`}>
+                    {activity.status === 'PENDING' ? 'Menunggu' :
+                     activity.status === 'DIPINJAM' ? 'Sedang Dipinjam' :
+                     activity.status === 'REJECTED' ? 'Ditolak' :
+                     'Dikembalikan'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
