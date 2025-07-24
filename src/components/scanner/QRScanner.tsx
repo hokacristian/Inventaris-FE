@@ -109,7 +109,7 @@ export default function QRScanner({ isOpen, onClose, onScan, title = "Scan QR Co
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[9999]">
+    <div className="fixed inset-0 bg-transparent flex items-center justify-center p-4 z-[60]">
       <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
@@ -167,7 +167,7 @@ export default function QRScanner({ isOpen, onClose, onScan, title = "Scan QR Co
 
             {isScanning && (
               <div className="absolute bottom-4 left-0 right-0">
-                <div className="bg-black bg-opacity-50 text-white text-center py-2 rounded-b-lg">
+                <div className="fixed inset-0 bg-transparent flex items-center justify-center p-4 z-[60]">
                   <p className="text-sm">Scanning for QR code...</p>
                 </div>
               </div>

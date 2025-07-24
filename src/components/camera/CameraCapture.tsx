@@ -233,7 +233,7 @@ export default function CameraCapture({ isOpen, onClose, onCapture, title = "Tak
                 <div className="absolute top-2 right-2">
                   <button
                     onClick={switchCamera}
-                    className="p-2 bg-black bg-opacity-50 text-white rounded-full hover:bg-opacity-70"
+                    className="fixed inset-0 bg-transparent flex items-center justify-center p-4 z-[60]"
                     title="Switch camera"
                   >
                     <RotateCw className="w-4 h-4" />

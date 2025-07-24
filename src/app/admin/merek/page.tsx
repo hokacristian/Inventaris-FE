@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/Button';
-import { TambahMerekModal } from '@/components/modals';
+import { TambahMerekModal, EditMerekModal } from '@/components/modals';
 import { merekApi } from '@/lib/api';
 import type { Merek } from '@/types/api';
 import { 
@@ -21,7 +21,9 @@ export default function AdminMerekPage() {
   const [merekList, setMerekList] = useState<Merek[]>([]);
   const [loading, setLoading] = useState(true);
   const [isTambahModalOpen, setIsTambahModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedMerek, setSelectedMerek] = useState<Merek | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
@@ -69,7 +71,30 @@ export default function AdminMerekPage() {
 
   const openEditModal = (merek: Merek) => {
     setSelectedMerek(merek);
-    // TODO: Implement edit modal
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedMerek(null);
+  };
+
+  const handleUpdateMerek = async (id: string, data: { nama: string }) => {
+    setActionLoading(true);
+    try {
+      const response = await merekApi.update(id, data);
+      if (response.success) {
+        toast.success('Merek berhasil diperbarui! ✨');
+        loadMerek();
+        closeEditModal();
+      }
+    } catch (error) {
+      console.error('Failed to update merek:', error);
+      toast.error('Gagal memperbarui merek');
+      throw error;
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const filteredMerek = merekList.filter(merek =>
@@ -189,11 +214,19 @@ export default function AdminMerekPage() {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Modals */}
       <TambahMerekModal
         isOpen={isTambahModalOpen}
         onClose={() => setIsTambahModalOpen(false)}
         onSuccess={handleTambahMerekSuccess}
+      />
+      
+      <EditMerekModal
+        isOpen={isEditModalOpen}
+        onClose={closeEditModal}
+        onSubmit={handleUpdateMerek}
+        merek={selectedMerek}
+        loading={actionLoading}
       />
     </DashboardLayout>
   );

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+import { TambahKategoriModal, EditKategoriModal } from '@/components/modals';
 import { kategoriApi } from '@/lib/api';
 import type { Kategori } from '@/types/api';
 import { 
@@ -16,89 +16,12 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-interface KategoriModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (nama: string) => Promise<void>;
-  kategori?: Kategori | null;
-  loading?: boolean;
-}
-
-function KategoriModal({ isOpen, onClose, onSubmit, kategori, loading }: KategoriModalProps) {
-  const [nama, setNama] = useState('');
-
-  useEffect(() => {
-    if (kategori) {
-      setNama(kategori.nama);
-    } else {
-      setNama('');
-    }
-  }, [kategori]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!nama.trim()) {
-      toast.error('Nama kategori harus diisi');
-      return;
-    }
-    await onSubmit(nama.trim());
-    setNama('');
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) {
-          onClose();
-        }
-      }}
-    >
-      <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl border-0">
-        <h3 className="text-lg font-semibold mb-4">
-          {kategori ? 'Edit Kategori' : 'Tambah Kategori'}
-        </h3>
-        
-        <form onSubmit={handleSubmit}>
-          <Input
-            label="Nama Kategori"
-            value={nama}
-            onChange={(e) => setNama(e.target.value)}
-            placeholder="Masukkan nama kategori"
-            required
-          />
-          
-          <div className="flex space-x-3 mt-6">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              className="flex-1"
-              disabled={loading}
-            >
-              Batal
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={loading}
-              className="flex-1"
-            >
-              {loading ? 'Menyimpan...' : kategori ? 'Update' : 'Simpan'}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
 
 export default function AdminKategoriPage() {
   const [kategoriList, setKategoriList] = useState<Kategori[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTambahModalOpen, setIsTambahModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedKategori, setSelectedKategori] = useState<Kategori | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
@@ -121,38 +44,35 @@ export default function AdminKategoriPage() {
     }
   };
 
-  const handleCreateKategori = async (nama: string) => {
+  const handleCreateKategori = async (data: { nama: string }) => {
     setActionLoading(true);
     try {
-      const response = await kategoriApi.create({ nama });
+      const response = await kategoriApi.create(data);
       if (response.success) {
         toast.success('Kategori berhasil ditambahkan! 🎉');
-        setIsModalOpen(false);
         loadKategori();
       }
     } catch (error) {
       console.error('Failed to create kategori:', error);
       toast.error('Gagal menambahkan kategori');
+      throw error;
     } finally {
       setActionLoading(false);
     }
   };
 
-  const handleUpdateKategori = async (nama: string) => {
-    if (!selectedKategori) return;
-    
+  const handleUpdateKategori = async (id: string, data: { nama: string }) => {
     setActionLoading(true);
     try {
-      const response = await kategoriApi.update(selectedKategori.id, { nama });
+      const response = await kategoriApi.update(id, data);
       if (response.success) {
         toast.success('Kategori berhasil diupdate! ✅');
-        setIsModalOpen(false);
-        setSelectedKategori(null);
         loadKategori();
       }
     } catch (error) {
       console.error('Failed to update kategori:', error);
       toast.error('Gagal mengupdate kategori');
+      throw error;
     } finally {
       setActionLoading(false);
     }
@@ -174,17 +94,20 @@ export default function AdminKategoriPage() {
   };
 
   const openCreateModal = () => {
-    setSelectedKategori(null);
-    setIsModalOpen(true);
+    setIsTambahModalOpen(true);
   };
 
   const openEditModal = (kategori: Kategori) => {
     setSelectedKategori(kategori);
-    setIsModalOpen(true);
+    setIsEditModalOpen(true);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const closeCreateModal = () => {
+    setIsTambahModalOpen(false);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
     setSelectedKategori(null);
   };
 
@@ -305,11 +228,18 @@ export default function AdminKategoriPage() {
         </div>
       </div>
 
-      {/* Modal */}
-      <KategoriModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        onSubmit={selectedKategori ? handleUpdateKategori : handleCreateKategori}
+      {/* Modals */}
+      <TambahKategoriModal
+        isOpen={isTambahModalOpen}
+        onClose={closeCreateModal}
+        onSubmit={handleCreateKategori}
+        loading={actionLoading}
+      />
+      
+      <EditKategoriModal
+        isOpen={isEditModalOpen}
+        onClose={closeEditModal}
+        onSubmit={handleUpdateKategori}
         kategori={selectedKategori}
         loading={actionLoading}
       />

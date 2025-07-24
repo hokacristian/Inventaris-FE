@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/Button';
-import { TambahLokasiModal } from '@/components/modals';
+import { TambahLokasiModal, EditLokasiModal } from '@/components/modals';
 import { lokasiApi } from '@/lib/api';
 import type { Lokasi } from '@/types/api';
 import { 
@@ -21,7 +21,9 @@ export default function AdminLokasiPage() {
   const [lokasiList, setLokasiList] = useState<Lokasi[]>([]);
   const [loading, setLoading] = useState(true);
   const [isTambahModalOpen, setIsTambahModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedLokasi, setSelectedLokasi] = useState<Lokasi | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
@@ -69,7 +71,30 @@ export default function AdminLokasiPage() {
 
   const openEditModal = (lokasi: Lokasi) => {
     setSelectedLokasi(lokasi);
-    // TODO: Implement edit modal
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedLokasi(null);
+  };
+
+  const handleUpdateLokasi = async (id: string, data: { nama: string }) => {
+    setActionLoading(true);
+    try {
+      const response = await lokasiApi.update(id, data);
+      if (response.success) {
+        toast.success('Lokasi berhasil diperbarui! ✨');
+        loadLokasi();
+        closeEditModal();
+      }
+    } catch (error) {
+      console.error('Failed to update lokasi:', error);
+      toast.error('Gagal memperbarui lokasi');
+      throw error;
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const filteredLokasi = lokasiList.filter(lokasi =>
@@ -189,11 +214,19 @@ export default function AdminLokasiPage() {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Modals */}
       <TambahLokasiModal
         isOpen={isTambahModalOpen}
         onClose={() => setIsTambahModalOpen(false)}
         onSuccess={handleTambahLokasiSuccess}
+      />
+      
+      <EditLokasiModal
+        isOpen={isEditModalOpen}
+        onClose={closeEditModal}
+        onSubmit={handleUpdateLokasi}
+        lokasi={selectedLokasi}
+        loading={actionLoading}
       />
     </DashboardLayout>
   );

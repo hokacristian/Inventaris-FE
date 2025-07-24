@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/Button';
-import { TambahBarangModal } from '@/components/modals';
+import { TambahBarangModal, EditBarangModal } from '@/components/modals';
 import { barangApi, kategoriApi, merekApi, lokasiApi } from '@/lib/api';
 import type { Barang, Kategori, Merek, Lokasi } from '@/types/api';
 import { 
@@ -42,6 +42,7 @@ export default function AdminBarangPage() {
   const [lokasiList, setLokasiList] = useState<Lokasi[]>([]);
   const [loading, setLoading] = useState(true);
   const [isTambahModalOpen, setIsTambahModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedBarang, setSelectedBarang] = useState<Barang | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -97,7 +98,17 @@ export default function AdminBarangPage() {
 
   const openEditModal = (barang: Barang) => {
     setSelectedBarang(barang);
-    // TODO: Implement edit modal
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedBarang(null);
+  };
+
+  const handleEditBarangSuccess = () => {
+    loadAllData();
+    closeEditModal();
   };
 
   const filteredBarang = barangList.filter(barang =>
@@ -297,11 +308,21 @@ export default function AdminBarangPage() {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Modals */}
       <TambahBarangModal
         isOpen={isTambahModalOpen}
         onClose={() => setIsTambahModalOpen(false)}
         onSuccess={handleTambahBarangSuccess}
+        kategoriList={kategoriList}
+        merekList={merekList}
+        lokasiList={lokasiList}
+      />
+      
+      <EditBarangModal
+        isOpen={isEditModalOpen}
+        onClose={closeEditModal}
+        onSuccess={handleEditBarangSuccess}
+        barang={selectedBarang}
         kategoriList={kategoriList}
         merekList={merekList}
         lokasiList={lokasiList}

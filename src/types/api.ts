@@ -96,6 +96,9 @@ export interface CreateBarangRequest {
 export interface UpdateBarangRequest {
   nama?: string;
   deskripsi?: string;
+  kategoriId?: string;
+  merekId?: string;
+  lokasiId?: string;
   kondisi?: 'BAIK' | 'RUSAK_RINGAN' | 'RUSAK_BERAT';
   foto?: File;
 }
@@ -104,11 +107,23 @@ export interface CreateKategoriRequest {
   nama: string;
 }
 
+export interface UpdateKategoriRequest {
+  nama: string;
+}
+
 export interface CreateMerekRequest {
   nama: string;
 }
 
+export interface UpdateMerekRequest {
+  nama: string;
+}
+
 export interface CreateLokasiRequest {
+  nama: string;
+}
+
+export interface UpdateLokasiRequest {
   nama: string;
 }
 
