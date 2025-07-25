@@ -45,7 +45,7 @@ export default function EditMerekModal({
     try {
       await onSubmit(merek.id, { nama: nama.trim() });
       onClose();
-    } catch (err) {
+    } catch {
       setError('Gagal memperbarui merek');
     }
   };

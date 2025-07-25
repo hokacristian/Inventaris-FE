@@ -10,10 +10,8 @@ import { exportPeminjamanStatisticsPDF } from '@/utils/pdfExport';
 import { 
   BarChart3, 
   TrendingUp,
-  Package,
   Users,
   Calendar,
-  Download,
   RefreshCw,
   AlertCircle,
   FileText

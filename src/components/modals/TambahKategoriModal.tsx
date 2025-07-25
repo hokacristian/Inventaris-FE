@@ -35,7 +35,7 @@ export default function TambahKategoriModal({
       await onSubmit({ nama: nama.trim() });
       setNama('');
       onClose();
-    } catch (err) {
+    } catch {
       setError('Gagal menambahkan kategori');
     }
   };

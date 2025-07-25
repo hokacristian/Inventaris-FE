@@ -22,9 +22,9 @@ export default function ForgotPasswordPage() {
       await authApi.forgotPassword({ email });
       setSuccess(true);
       toast.success('Email reset password berhasil dikirim!');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to send reset email:', error);
-      const errorMessage = error.response?.data?.message || 'Gagal mengirim email reset password';
+      const errorMessage = (error as {response?: {data?: {message?: string}}})?.response?.data?.message || 'Gagal mengirim email reset password';
       toast.error(errorMessage);
     } finally {
       setLoading(false);

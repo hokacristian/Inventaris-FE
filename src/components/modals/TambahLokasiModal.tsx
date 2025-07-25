@@ -96,31 +96,6 @@ export function TambahLokasiModal({ isOpen, onClose, onSuccess }: TambahLokasiMo
             required
           />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Alamat
-            </label>
-            <textarea
-              value={formData.alamat}
-              onChange={(e) => handleInputChange('alamat', e.target.value)}
-              placeholder="Masukkan alamat lengkap lokasi"
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 bg-white text-gray-900 placeholder-gray-500"
-              rows={2}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Deskripsi
-            </label>
-            <textarea
-              value={formData.deskripsi}
-              onChange={(e) => handleInputChange('deskripsi', e.target.value)}
-              placeholder="Masukkan deskripsi lokasi (opsional)"
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 bg-white text-gray-900 placeholder-gray-500"
-              rows={3}
-            />
-          </div>
           
           <div className="flex space-x-3 mt-6">
             <Button

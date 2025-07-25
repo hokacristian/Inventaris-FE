@@ -45,7 +45,7 @@ export default function EditKategoriModal({
     try {
       await onSubmit(kategori.id, { nama: nama.trim() });
       onClose();
-    } catch (err) {
+    } catch {
       setError('Gagal memperbarui kategori');
     }
   };

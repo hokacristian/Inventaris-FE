@@ -16,8 +16,6 @@ import {
   Settings,
   Tag,
   Building,
-  BarChart3,
-  Clock,
   FileText,
 } from "lucide-react";
 import { useRouter } from "next/navigation";

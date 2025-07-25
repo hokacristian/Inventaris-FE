@@ -166,10 +166,10 @@ export default function QRScanner({ isOpen, onClose, onScan, title = "Scan QR Co
             </div>
 
             {isScanning && (
-              <div className="absolute bottom-4 left-0 right-0">
-                <div className="fixed inset-0 bg-transparent flex items-center justify-center p-4 z-[60]">
-                  <p className="text-sm">Scanning for QR code...</p>
-                </div>
+              <div className="absolute bottom-4 left-0 right-0 text-center">
+                <p className="text-sm text-white bg-black bg-opacity-50 px-3 py-1 rounded-full inline-block">
+                  Scanning for QR code...
+                </p>
               </div>
             )}
           </div>

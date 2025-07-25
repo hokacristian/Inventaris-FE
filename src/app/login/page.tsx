@@ -64,6 +64,7 @@ export default function LoginPage() {
     });
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const _setDemoCredentials = () => {
     if (loginType === 'admin') {
       setFormData({

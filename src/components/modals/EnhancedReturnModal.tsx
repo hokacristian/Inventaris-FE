@@ -50,6 +50,11 @@ export default function EnhancedReturnModal({
   // Scanner states
   const [isQRScannerOpen, setIsQRScannerOpen] = useState(false);
   const [isCameraCaptureOpen, setIsCameraCaptureOpen] = useState(false);
+  
+  // Debug log for camera state changes
+  useEffect(() => {
+    console.log('EnhancedReturnModal: isCameraCaptureOpen changed to:', isCameraCaptureOpen);
+  }, [isCameraCaptureOpen]);
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [scanLoading, setScanLoading] = useState(false);
 
@@ -337,7 +342,10 @@ export default function EnhancedReturnModal({
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => setIsCameraCaptureOpen(true)}
+                        onClick={() => {
+                          console.log('Ambil Ulang button clicked in return modal');
+                          setIsCameraCaptureOpen(true);
+                        }}
                         className="flex-1"
                       >
                         <Camera className="w-4 h-4 mr-1" />
@@ -369,7 +377,10 @@ export default function EnhancedReturnModal({
                           type="button"
                           variant="outline"
                           size="sm"
-                          onClick={() => setIsCameraCaptureOpen(true)}
+                          onClick={() => {
+                            console.log('Camera button clicked in return modal');
+                            setIsCameraCaptureOpen(true);
+                          }}
                         >
                           <Camera className="w-4 h-4 mr-1" />
                           Kamera

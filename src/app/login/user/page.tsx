@@ -65,6 +65,7 @@ export default function UserLoginPage() {
     });
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const _setDemoCredentials = () => {
     setFormData({
       email: 'user@example.com',

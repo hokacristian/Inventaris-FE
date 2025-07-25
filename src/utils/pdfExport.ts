@@ -182,7 +182,7 @@ export const exportPeminjamanStatisticsPDF = (data: PeminjamanStatistics) => {
     doc.setFont('helvetica', 'normal');
     detailY += 8;
     
-    data.transaksiDetail.slice(0, 10).forEach((transaction, index) => {
+    data.transaksiDetail.slice(0, 10).forEach((transaction) => {
       doc.text(transaction.tanggal, 25, detailY);
       doc.text(transaction.namaBarang.substring(0, 20), 60, detailY);
       doc.text(transaction.peminjam.substring(0, 20), 110, detailY);
@@ -254,7 +254,7 @@ export const exportBarangListPDF = (barangList: BarangItem[], statistics: Barang
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8);
   
-  barangList.slice(0, 30).forEach((barang, index) => {
+  barangList.slice(0, 30).forEach((barang) => {
     // Check if we need a new page
     if (currentY > 270) {
       doc.addPage();

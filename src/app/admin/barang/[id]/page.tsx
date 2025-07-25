@@ -94,6 +94,25 @@ export default function BarangDetailPage({ params }: BarangDetailPageProps) {
     }
   };
 
+  const handleDownloadQRCode = async () => {
+    if (!barang?.qrCodeUrl) return;
+    
+    try {
+      const response = await fetch(barang.qrCodeUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `QR-${barang.kodeBarang}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading QR code:', error);
+    }
+  };
+
   if (loading) {
     return (
       <DashboardLayout title="Detail Barang">
@@ -309,7 +328,7 @@ export default function BarangDetailPage({ params }: BarangDetailPageProps) {
                     <p className="text-sm text-gray-600 text-center">
                       Scan untuk melihat detail barang
                     </p>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={handleDownloadQRCode}>
                       <QrCode className="w-4 h-4 mr-2" />
                       Download QR Code
                     </Button>
@@ -333,7 +352,7 @@ export default function BarangDetailPage({ params }: BarangDetailPageProps) {
                   Lihat Riwayat Peminjaman
                 </Button>
                 {barang.qrCodeUrl && (
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full" onClick={handleDownloadQRCode}>
                     <QrCode className="w-4 h-4 mr-2" />
                     Download QR Code
                   </Button>
