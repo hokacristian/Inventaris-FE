@@ -11,7 +11,6 @@ import {
   Tag, 
   Bookmark, 
   Calendar, 
-  QrCode, 
   Send, 
   CheckCircle,
   AlertCircle,
@@ -203,22 +202,6 @@ export default function ItemDetailPage() {
               )}
             </div>
 
-            {/* QR Code */}
-            {item.qrCodeUrl && (
-              <div className="bg-white rounded-lg shadow p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <QrCode size={20} />
-                  <h3 className="font-medium">QR Code</h3>
-                </div>
-                <div className="flex justify-center">
-                  <img
-                    src={item.qrCodeUrl}
-                    alt="QR Code"
-                    className="w-32 h-32"
-                  />
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Details Section */}

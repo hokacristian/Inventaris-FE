@@ -47,7 +47,7 @@ export default function DashboardPage() {
         totalBarang: barangData.length,
         totalKategori: kategoriData.length,
         totalLokasi: lokasiData.length,
-        myPeminjaman: peminjamanData.filter((p: { status: string }) => p.status === 'PENDING' || p.status === 'DIPINJAM').length
+        myPeminjaman: peminjamanData.filter((p: { status: string }) => p.status === 'DIPINJAM').length
       });
     } catch (error) {
       console.error('Error fetching user stats:', error);

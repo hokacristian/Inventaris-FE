@@ -42,6 +42,15 @@ export interface ProfileResponse {
   data: User;
 }
 
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ForgotPasswordResponse {
+  success: boolean;
+  message: string;
+}
+
 export interface Kategori {
   id: string;
   nama: string;

@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { ArrowLeft, Mail, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+import { authApi } from '@/lib/api';
+import toast from 'react-hot-toast';
 import logoSemantis from './logo_semantis.png';
 
 export default function ForgotPasswordPage() {
@@ -17,13 +19,13 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      // Simulate API call for forgot password
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // For demo purposes, always show success
+      await authApi.forgotPassword({ email });
       setSuccess(true);
-    } catch (error) {
+      toast.success('Email reset password berhasil dikirim!');
+    } catch (error: any) {
       console.error('Failed to send reset email:', error);
+      const errorMessage = error.response?.data?.message || 'Gagal mengirim email reset password';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
